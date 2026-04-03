@@ -14,7 +14,7 @@
     <meta property="og:title" content="NEOFLW — NEØ FLOWOFF Token" />
     <meta property="og:description"
         content="NEOFLW is the native token of the NEØ FLOWOFF ecosystem. ERC-20 on Base mainnet. Trade, hold and participate in the NEO Protocol." />
-    <meta property="og:image" content="https://neoflw.vercel.app/public/og-image.png" />
+    <meta property="og:image" content="./public/og-image.png" />
 
     <!-- ═══ Open Graph Protocol — Recommended ═══ -->
     <meta property="og:site_name" content="NEØ FlowOFF" />
@@ -2068,20 +2068,22 @@
         }
 
         async function checkNetwork() {
-            const network = await provider.getNetwork();
-            if (network.chainId !== 8453n) { // 8453 is Base Mainnet
+            // Use raw window.ethereum to check chainId to avoid ethers v6 NETWORK_ERROR
+            const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+            const targetChainId = '0x2105'; // 8453 in hex
+
+            if (chainId !== targetChainId) {
                 try {
                     await window.ethereum.request({
                         method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: '0x2105' }], // 0x2105 = 8453
+                        params: [{ chainId: targetChainId }],
                     });
                 } catch (switchError) {
-                    // This error code indicates that the chain has not been added to MetaMask.
                     if (switchError.code === 4902) {
                         await window.ethereum.request({
                             method: 'wallet_addEthereumChain',
                             params: [{
-                                chainId: '0x2105',
+                                chainId: targetChainId,
                                 chainName: 'Base Mainnet',
                                 nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
                                 rpcUrls: ['https://mainnet.base.org'],
@@ -2092,6 +2094,8 @@
                         throw switchError;
                     }
                 }
+                // Small delay to let MetaMask update its internal state
+                await new Promise(resolve => setTimeout(resolve, 1000));
             }
         }
 
@@ -2121,10 +2125,11 @@
         async function connectWallet() {
             if (window.ethereum) {
                 try {
-                    provider = new ethers.BrowserProvider(window.ethereum);
-                    
-                    // Force network check
+                    // 1. Force network check/switch BEFORE creating provider
                     await checkNetwork();
+
+                    // 2. Clear any existing provider and re-init
+                    provider = new ethers.BrowserProvider(window.ethereum);
                     
                     const accounts = await provider.send("eth_requestAccounts", []);
                     const addr = accounts[0];
@@ -2257,6 +2262,13 @@
         function setupEventListeners() {
             document.getElementById('connect-btn').addEventListener('click', toggleWallet);
             document.getElementById('action-mint-btn').addEventListener('click', doMint);
+
+            if (window.ethereum) {
+                // Standard practice is to reload when network or accounts change
+                // to avoid state inconsistencies or ethers v6 NETWORK_ERROR
+                window.ethereum.on('chainChanged', () => window.location.reload());
+                window.ethereum.on('accountsChanged', () => window.location.reload());
+            }
         }
 
         function copyAddr() {
