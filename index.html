@@ -197,52 +197,7 @@
             transition: opacity 0.2s, transform 0.15s;
         }
 
-        .nav-wallet-btn:hover {
-            opacity: 0.85;
-            transform: scale(0.98);
-        }
-
-        .nav-wallet-btn.active:hover::after {
-            content: 'Disconnect';
-            position: absolute;
-            top: 100%;
-            right: 0;
-            margin-top: 0.5rem;
-            padding: 0.4rem 0.8rem;
-            background: #ff4d4d;
-            color: #fff;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(255, 77, 77, 0.3);
-            pointer-events: none;
-            z-index: 1000;
-        }
-
-        .nav-wallet-btn.active {
-            background: var(--glass-b);
-            border: 1px solid var(--border-b);
-            color: var(--text);
-            position: relative;
-        }
-        
-        .nav-inner .nav-wallet-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.45rem 1.1rem;
-            border-radius: 999px;
-            background: var(--pink);
-            color: #fff;
-            font-family: var(--display);
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-decoration: none;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-        }
+        /* NAV Button Styles Unified Below */
 
         /* HERO */
         .hero {
@@ -1536,7 +1491,7 @@
         }
 
         .nav-wallet-btn {
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 1.1rem;
             border-radius: 999px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -1544,37 +1499,59 @@
             font-size: 0.75rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             text-decoration: none;
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            justify-content: center;
+            gap: 0.6rem;
+            min-width: 140px; /* Stable width to prevent flickering */
+            position: relative;
         }
 
         .nav-wallet-btn:hover {
             border-color: rgba(255, 255, 255, 0.2);
             background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-1px);
         }
 
         .nav-wallet-btn.active {
-            border-color: rgba(0, 255, 136, 0.2);
+            border-color: rgba(0, 255, 136, 0.3);
             background: rgba(0, 255, 136, 0.05);
             color: var(--green);
         }
 
         .nav-wallet-btn.active:hover {
-            background: rgba(255, 0, 0, 0.1);
-            border-color: rgba(255, 0, 0, 0.3);
+            background: rgba(255, 77, 77, 0.1);
+            border-color: rgba(255, 77, 77, 0.3);
             color: #ff4d4d;
         }
 
-        .nav-wallet-btn.active:hover .addr-txt {
-            display: none;
+        .nav-wallet-btn .addr-txt {
+            transition: opacity 0.2s;
+        }
+
+        .nav-wallet-btn.active:hover .addr-txt,
+        .nav-wallet-btn.active:hover .dot {
+            opacity: 0;
+            user-select: none;
+        }
+
+        .nav-wallet-btn.active::after {
+            content: 'Disconnect';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: all 0.2s;
+            font-weight: 700;
+            pointer-events: none;
         }
 
         .nav-wallet-btn.active:hover::after {
-            content: 'Disconnect';
-            font-weight: 700;
+            opacity: 1;
+            transform: translate(-50%, -50%);
         }
 
         .dot {
