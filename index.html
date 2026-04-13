@@ -1960,19 +1960,19 @@
                 </div>
 
                 <div class="bc bc-w12" style="background:var(--glass);">
-                    <div class="bc-label">Live Stats</div>
+                    <div class="bc-label">Live Stats <span id="stats-status" style="font-size:0.6rem;color:var(--green);margin-left:0.5rem;opacity:0;">● live</span></div>
                     <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));gap:var(--fib4);margin-top:var(--fib3);">
                         <div>
-                            <div class="stat-cell-label">Holders</div>
-                            <div class="bc-number-huge">12,482</div>
+                            <div class="stat-cell-label">Token Price</div>
+                            <div class="bc-number-huge" id="stat-price">—</div>
                         </div>
                         <div>
-                            <div class="stat-cell-label">Transfers (24h)</div>
-                            <div class="bc-number-huge">5,201</div>
+                            <div class="stat-cell-label">24h Volume</div>
+                            <div class="bc-number-huge" id="stat-volume">—</div>
                         </div>
                         <div>
                             <div class="stat-cell-label">Market Cap</div>
-                            <div class="bc-number-huge pink">$4.2M</div>
+                            <div class="bc-number-huge pink" id="stat-mcap">—</div>
                         </div>
                     </div>
                 </div>
@@ -2042,8 +2042,8 @@
 
                 <div class="bc bc-supply bc-w8 interactive-mint">
                     <div class="bc-label">On-chain Distribution</div>
-                    <div class="bc-number-huge" id="supply-count">1,000,000,000</div>
-                    <div class="bc-sublabel">$NEOFLW // Maximum supply on base. Minting is limited to one per wallet.</div>
+                    <div class="bc-number-huge" id="supply-count">—</div>
+                    <div class="bc-sublabel">$NEOFLW minted of 1,000,000,000 max supply. One mint per wallet.</div>
 
                     <div class="supply-progress">
                         <div class="supply-bar" id="supply-bar" style="width: 100%;"></div>
@@ -2332,7 +2332,7 @@
             } catch (e) {
                 console.error("Failed to load contract info:", e);
                 // Fallback to static info if RPC fails
-                document.getElementById('supply-count').textContent = "1,000,000,000";
+                // BaseScan fallback will populate supply-count via updateLiveStats()
             }
 
             setupEventListeners();
@@ -2552,25 +2552,54 @@
         }
 
         async function updateLiveStats() {
+            const POOL = '0xba6f7f1d429c61e1714bd94a1c74414289fe52f1c14473ba005edfd042d3f014';
+            const CONTRACT_ADDR = '0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B';
+
+            function fmt(n) {
+                if (n >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B';
+                if (n >= 1e6) return '$' + (n / 1e6).toFixed(2) + 'M';
+                if (n >= 1e3) return '$' + (n / 1e3).toFixed(1) + 'K';
+                return '$' + n.toFixed(2);
+            }
+
             try {
-                // Basescan API V2 Integration for $NEOFLW Token Data
-                const CONTRACT_ADDR = '0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B';
-                const res = await fetch(`https://api.basescan.org/api?module=stats&action=tokensupply&contractaddress=${CONTRACT_ADDR}`);
-                const data = await res.json();
-                
-                if (data.status === "1") {
-                    const supply = parseInt(data.result) / 1e18;
-                    // Dynamically update all supply indicators
-                    document.querySelectorAll('.stat-val').forEach(el => {
-                        if (el.textContent.includes('1,000,000,000')) {
-                            el.innerHTML = `<span style="color:var(--pink)">${supply.toLocaleString()}</span> <span style="font-size:0.6rem">$NEOFLW</span>`;
-                        }
-                    });
-                }
-                
-                console.log("On-chain verification active via neo-mcp-server [n33w15if0soji4zorjk089z1q]");
+                // GeckoTerminal API — free, no key required
+                const res = await fetch(`https://api.geckoterminal.com/api/v2/networks/base/pools/${POOL}`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const json = await res.json();
+                const attr = json.data.attributes;
+
+                const price = parseFloat(attr.base_token_price_usd);
+                const vol24 = parseFloat(attr.volume_usd.h24);
+                const mcap = parseFloat(attr.fdv_usd || attr.market_cap_usd || 0);
+
+                document.getElementById('stat-price').textContent = price < 0.01
+                    ? '$' + price.toFixed(6)
+                    : '$' + price.toFixed(4);
+                document.getElementById('stat-volume').textContent = fmt(vol24);
+                document.getElementById('stat-mcap').textContent = fmt(mcap);
+
+                const badge = document.getElementById('stats-status');
+                badge.style.opacity = '1';
             } catch (err) {
-                console.warn("Retrying on-chain sync...", err);
+                console.warn('Live stats fetch failed:', err);
+            }
+
+            try {
+                // BaseScan — total supply for On-chain Distribution card
+                const MAX_SUPPLY = 1_000_000_000;
+                const supplyRes = await fetch(`https://api.basescan.org/api?module=stats&action=tokensupply&contractaddress=${CONTRACT_ADDR}`);
+                const supplyData = await supplyRes.json();
+                if (supplyData.status === '1') {
+                    const supply = parseInt(supplyData.result) / 1e18;
+                    const el = document.getElementById('supply-count');
+                    if (el) el.textContent = supply.toLocaleString();
+                    const bar = document.getElementById('supply-bar');
+                    if (bar) bar.style.width = `${(supply / MAX_SUPPLY) * 100}%`;
+                }
+            } catch (err) {
+                console.warn('Supply fetch failed:', err);
             }
         }
 

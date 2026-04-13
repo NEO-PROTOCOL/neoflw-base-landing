@@ -1,0 +1,31 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Astro Dev",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"],
+      "port": 4322
+    },
+    {
+      "name": "Astro Preview",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["preview"],
+      "port": 4322
+    },
+    {
+      "name": "Static Serve",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "."],
+      "port": 3000,
+      "autoPort": true
+    },
+    {
+      "name": "Dist Serve",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "dist"],
+      "port": 3001,
+      "autoPort": true
+    }
+  ]
+}

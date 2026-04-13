@@ -1,0 +1,64 @@
+---
+---
+<section class="verify-section" id="verify">
+    <div class="wrap">
+        <div class="section-eyebrow">03 — Transparency</div>
+        <div class="section-title">Verified on-chain</div>
+        <div class="verify-grid">
+            <div class="verify-left">
+                <div class="verify-ok" style="display:flex;align-items:center;gap:8px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:14px;height:14px;"><polyline points="20 6 9 17 4 12"/></svg>
+                    Basescan Verified
+                </div>
+                <div class="verify-heading"><span class="ok">Code</span> is law.</div>
+                <p class="verify-body">Every line of NEOFLW contract code is publicly verifiable. No proxies hiding
+                    logic. No upgradeable surprises. Audit it yourself.</p>
+                <ul class="verify-checklist">
+                    <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:10px;height:10px;"><polyline points="20 6 9 17 4 12"/></svg></span> Source code match verified on Basescan</li>
+                    <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:10px;height:10px;"><polyline points="20 6 9 17 4 12"/></svg></span> No hidden mint functions beyond publicMint</li>
+                    <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:10px;height:10px;"><polyline points="20 6 9 17 4 12"/></svg></span> Ownable2Step — no single point of failure</li>
+                    <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:10px;height:10px;"><polyline points="20 6 9 17 4 12"/></svg></span> EIP-2612 Permit audited by community</li>
+                </ul>
+                <a href="https://basescan.org/token/0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b" class="btn-fill"
+                    target="_blank" rel="noopener">View Contract on Basescan ↗</a>
+            </div>
+            <div class="verify-right">
+                <div class="code-header">
+                    <div class="dot dot-r"></div>
+                    <div class="dot dot-y"></div>
+                    <div class="dot dot-g"></div>
+                    <span style="margin-left:0.5rem;font-size:0.7rem;color:var(--text-3);">NeoFlwToken.sol</span>
+                </div>
+                <div class="code-body">
+                    <span class="code-line"><span class="c-cmt">// SPDX-License-Identifier: MIT</span></span>
+                    <span class="code-line"><span class="c-key">pragma</span> solidity ^0.8.20;</span>
+                    <span class="code-line">&nbsp;</span>
+                    <span class="code-line"><span class="c-key">import</span> <span
+                            class="c-str">"@openzeppelin/ERC20"</span>;</span>
+                    <span class="code-line"><span class="c-key">import</span> <span
+                            class="c-str">"@openzeppelin/ERC20Burnable"</span>;</span>
+                    <span class="code-line"><span class="c-key">import</span> <span
+                            class="c-str">"@openzeppelin/ERC20Permit"</span>;</span>
+                    <span class="code-line"><span class="c-key">import</span> <span
+                            class="c-str">"@openzeppelin/Ownable2Step"</span>;</span>
+                    <span class="code-line">&nbsp;</span>
+                    <span class="code-line"><span class="c-key">contract</span> <span
+                            class="c-pnk">NeoFlwToken</span> <span class="c-key">is</span></span>
+                    <span class="code-line">&nbsp;&nbsp;<span class="c-val">ERC20</span>, <span
+                            class="c-val">ERC20Burnable</span>,</span>
+                    <span class="code-line">&nbsp;&nbsp;<span class="c-val">ERC20Permit</span>, <span
+                            class="c-val">Ownable2Step</span></span>
+                    <span class="code-line">{</span>
+                    <span class="code-line">&nbsp;&nbsp;<span class="c-key">uint256 public constant</span></span>
+                    <span class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-str">MAX_SUPPLY</span> = <span
+                            class="c-val">1_000_000_000e18</span>;</span>
+                    <span class="code-line">&nbsp;</span>
+                    <span class="code-line">&nbsp;&nbsp;<span class="c-cmt">// Base Mainnet · Chain
+                            8453</span></span>
+                    <span class="code-line">&nbsp;&nbsp;<span class="c-cmt">// 0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B</span></span>
+                    <span class="code-line">}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

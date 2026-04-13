@@ -1,6 +1,8 @@
 ---
-const pageTitle = "MINT $NEOFLW — NEØ Protocol";
-const contractAddress = "0x89D2...5513"; // Placeholder
+const pageTitle   = "MINT $NEOFLW — NEØ FlowOFF";
+const CONTRACT    = "0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B";
+const CHAIN_ID    = "0x2105"; // Base mainnet (8453)
+const ETHERS_SRI  = "sha384-xeyyvbIlX+FahWHIZR6gjoC4A1i44cTBxZ330euRbtiXZwfcVDWVeOuJ4sGx8R2d";
 ---
 
 <!doctype html>
@@ -10,37 +12,35 @@ const contractAddress = "0x89D2...5513"; // Placeholder
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{pageTitle}</title>
     <meta name="base:app_id" content="6951db634d3a403912ed8464" />
+
+    <!-- OG -->
+    <meta property="og:title" content="Mint $NEOFLW" />
+    <meta property="og:description" content="Mint NEØ FlowOFF token on Base mainnet — 1,000 $NEOFLW per wallet." />
+    <meta property="og:image" content="https://neoflw.vercel.app/og-image.png" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet" />
+
     <style>
       :root {
-        --bg: #030305;
-        --card-bg: rgba(3, 3, 5, 0.95);
-        --border: rgba(255, 0, 204, 0.25);
-        --text: #ffffff;
-        --text-2: rgba(255, 255, 255, 0.75);
-        --pink: #ff007a;
-        --pink-glow: rgba(255, 0, 122, 0.4);
-        --green: #00ff88;
-        --mono: "JetBrains Mono", monospace;
-        --f-8: 8px;
-        --f-13: 13px;
-        --f-21: 21px;
-        --f-34: 34px;
-        --f-55: 55px;
+        --bg:         #030305;
+        --card-bg:    rgba(3, 3, 5, 0.95);
+        --border:     rgba(255, 0, 204, 0.25);
+        --text:       #ffffff;
+        --text-2:     rgba(255, 255, 255, 0.75);
+        --text-3:     rgba(255, 255, 255, 0.45);
+        --pink:       #ff007a;
+        --pink-glow:  rgba(255, 0, 122, 0.4);
+        --green:      #00ff88;
+        --green-glow: rgba(0, 255, 136, 0.3);
+        --blue:       #0052ff;
+        --mono:       "JetBrains Mono", monospace;
+        --f-8:  8px;  --f-13: 13px;
+        --f-21: 21px; --f-34: 34px;
       }
 
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
       body {
         background-color: var(--bg);
@@ -50,43 +50,28 @@ const contractAddress = "0x89D2...5513"; // Placeholder
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: hidden;
       }
 
       body::after {
         content: "";
-        position: fixed;
-        inset: 0;
+        position: fixed; inset: 0;
         background-image: url("/bg-pattern.svg");
         background-size: 100px 100px;
         opacity: 0.15;
-        pointer-events: none;
-        z-index: -1;
+        pointer-events: none; z-index: -1;
       }
 
       body::before {
         content: "";
-        position: fixed;
-        inset: 0;
+        position: fixed; inset: 0;
         background:
-          radial-gradient(
-            circle at 80% 20%,
-            rgba(255, 0, 122, 0.12) 0%,
-            transparent 50%
-          ),
-          radial-gradient(
-            circle at 20% 80%,
-            rgba(0, 82, 255, 0.1) 0%,
-            transparent 50%
-          );
+          radial-gradient(circle at 80% 20%, rgba(255,0,122,0.12) 0%, transparent 50%),
+          radial-gradient(circle at 20% 80%, rgba(0,82,255,0.10) 0%, transparent 50%);
         z-index: -2;
       }
 
-      .mint-container {
-        width: 100%;
-        max-width: 420px;
-        padding: var(--f-34);
-      }
+      /* ── Layout ───────────────────────────────────────────── */
+      .mint-container { width: 100%; max-width: 440px; padding: var(--f-34); }
 
       .mint-card {
         background: var(--card-bg);
@@ -95,313 +80,417 @@ const contractAddress = "0x89D2...5513"; // Placeholder
         padding: var(--f-34);
         backdrop-filter: blur(60px) saturate(220%);
         -webkit-backdrop-filter: blur(60px) saturate(220%);
-        box-shadow:
-          0 40px 120px rgba(0, 0, 0, 0.8),
-          inset 0 1px 0 rgba(255, 255, 255, 0.05);
-        position: relative;
-      }
-
-      .logo-area {
-        text-align: center;
-        margin-bottom: var(--f-34);
-      }
-
-      .logo-text {
-        font-size: 1rem;
-        letter-spacing: 0.15em;
-        font-weight: 800;
-        color: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-      }
-
-      .logo-sep {
-        color: var(--pink);
-        opacity: 0.8;
-      }
-
-      .terminal-box {
-        background: rgba(0, 0, 0, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 20px;
-        padding: var(--f-21);
-        margin-bottom: var(--f-34);
-        font-family: var(--mono);
-        font-size: 0.7rem;
-        height: 130px;
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: var(--pink-glow) transparent;
-      }
-
-      .terminal-header {
-        font-size: 0.6rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: var(--text-2);
-        margin-bottom: 10px;
-        display: flex;
-        justify-content: space-between;
-        letter-spacing: 0.05em;
-      }
-
-      .status-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: var(--green);
-        box-shadow: 0 0 12px var(--green);
-      }
-
-      .log-entry {
-        margin-bottom: 5px;
-        color: var(--text-2);
-        border-left: 2px solid transparent;
-        padding-left: 8px;
-      }
-      .log-entry.cmd {
-        color: var(--green);
-        border-left-color: var(--green);
-      }
-      .log-entry.warn {
-        color: var(--pink);
-      }
-
-      .stats-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: var(--f-13);
-        margin-bottom: var(--f-34);
-      }
-
-      .stat-item {
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        padding: 1.25rem;
-        border-radius: 20px;
-        transition: border-color 0.3s;
-      }
-
-      .stat-label {
-        font-size: 0.6rem;
-        color: var(--text-2);
-        text-transform: uppercase;
-        margin-bottom: 4px;
-        letter-spacing: 0.08em;
-      }
-      .stat-val {
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: #fff;
-      }
-
-      .mint-btn {
-        width: 100%;
-        padding: 1.25rem;
-        border-radius: 999px;
-        background: var(--pink);
-        border: none;
-        color: #fff;
-        font-family: inherit;
-        font-size: 0.95rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        box-shadow: 0 15px 35px var(--pink-glow);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        letter-spacing: 0.02em;
-      }
-
-      .mint-btn:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 20px 45px var(--pink-glow);
-      }
-
-      .mint-btn:active {
-        transform: translateY(0) scale(0.98);
-      }
-
-      .mint-btn:disabled {
-        background: rgba(255, 255, 255, 0.08);
-        color: var(--text-2);
-        box-shadow: none;
-        cursor: wait;
-        transform: none;
-      }
-
-      .back-link {
-        text-align: center;
-        margin-top: var(--f-21);
-      }
-
-      .back-link a {
-        color: var(--text-2);
-        text-decoration: none;
-        font-size: 0.75rem;
-        font-weight: 500;
-        transition: color 0.2s;
-        opacity: 0.6;
-      }
-
-      .back-link a:hover {
-        color: #fff;
-        opacity: 1;
+        box-shadow: 0 40px 120px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05);
+        animation: cardEntry 1s cubic-bezier(0.2,0.8,0.2,1) both;
       }
 
       @keyframes cardEntry {
-        from {
-          opacity: 0;
-          filter: blur(10px);
-          transform: scale(0.95) translateY(30px);
-        }
-        to {
-          opacity: 1;
-          filter: blur(0);
-          transform: scale(1) translateY(0);
-        }
+        from { opacity: 0; filter: blur(10px); transform: scale(0.95) translateY(30px); }
+        to   { opacity: 1; filter: blur(0);    transform: scale(1)    translateY(0); }
       }
 
-      .mint-card {
-        animation: cardEntry 1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      /* ── Header ───────────────────────────────────────────── */
+      .logo-area   { text-align: center; margin-bottom: var(--f-34); }
+      .logo-text   {
+        font-size: 1rem; letter-spacing: 0.15em; font-weight: 800;
+        display: flex; align-items: center; justify-content: center; gap: 10px;
       }
+      .logo-sep    { color: var(--pink); opacity: 0.8; }
+
+      /* ── Stats grid ───────────────────────────────────────── */
+      .stats-grid {
+        display: grid; grid-template-columns: 1fr 1fr;
+        gap: var(--f-13); margin-bottom: var(--f-21);
+      }
+      .stat-item {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.06);
+        padding: 1.25rem; border-radius: 20px;
+        transition: border-color 0.3s;
+      }
+      .stat-item.full { grid-column: 1 / -1; }
+      .stat-label {
+        font-size: 0.6rem; color: var(--text-2);
+        text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.08em;
+      }
+      .stat-val { font-size: 0.95rem; font-weight: 700; }
+      .stat-val.pink  { color: var(--pink); }
+      .stat-val.green { color: var(--green); }
+
+      /* ── Terminal ─────────────────────────────────────────── */
+      .terminal-box {
+        background: rgba(0,0,0,0.6);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 20px; padding: var(--f-21);
+        margin-bottom: var(--f-21);
+        font-family: var(--mono); font-size: 0.7rem;
+        height: 140px; overflow-y: auto;
+        scrollbar-width: thin; scrollbar-color: var(--pink-glow) transparent;
+      }
+      .terminal-header {
+        font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
+        color: var(--text-2); margin-bottom: 10px;
+        display: flex; justify-content: space-between; letter-spacing: 0.05em;
+      }
+      .status-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: var(--green); box-shadow: 0 0 12px var(--green);
+      }
+      .log-entry { margin-bottom: 5px; color: var(--text-3); padding-left: 8px; border-left: 2px solid transparent; }
+      .log-entry.cmd  { color: var(--green);  border-left-color: var(--green); }
+      .log-entry.warn { color: var(--pink);   border-left-color: var(--pink); }
+      .log-entry.info { color: var(--text-2); border-left-color: rgba(255,255,255,0.2); }
+
+      /* ── Mint button ──────────────────────────────────────── */
+      .mint-btn {
+        width: 100%; padding: 1.25rem; border-radius: 999px;
+        background: var(--pink); border: none; color: #fff;
+        font-family: inherit; font-size: 0.95rem; font-weight: 700;
+        cursor: pointer; letter-spacing: 0.02em;
+        transition: all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+        box-shadow: 0 15px 35px var(--pink-glow);
+        display: flex; align-items: center; justify-content: center; gap: 12px;
+      }
+      .mint-btn:hover:not(:disabled)  { transform: translateY(-3px) scale(1.02); box-shadow: 0 20px 45px var(--pink-glow); }
+      .mint-btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+      .mint-btn:disabled { background: rgba(255,255,255,0.08); color: var(--text-2); box-shadow: none; cursor: wait; transform: none; }
+      .mint-btn.success { background: var(--green); box-shadow: 0 15px 35px var(--green-glow); color: #000; }
+      .mint-btn.error   { background: rgba(255,0,122,0.2); color: var(--pink); box-shadow: none; }
+
+      /* ── Error banner ─────────────────────────────────────── */
+      .error-banner {
+        display: none; background: rgba(255,0,122,0.1);
+        border: 1px solid rgba(255,0,122,0.3);
+        border-radius: 12px; padding: 0.75rem 1rem;
+        font-size: 0.75rem; color: var(--pink);
+        margin-bottom: var(--f-21); line-height: 1.5;
+      }
+
+      /* ── Back link ────────────────────────────────────────── */
+      .back-link { text-align: center; margin-top: var(--f-21); }
+      .back-link a {
+        color: var(--text-2); text-decoration: none;
+        font-size: 0.75rem; font-weight: 500; opacity: 0.6; transition: opacity 0.2s;
+      }
+      .back-link a:hover { opacity: 1; }
+
+      /* ── Tx link ──────────────────────────────────────────── */
+      .tx-link {
+        display: none; text-align: center; margin-top: 0.75rem;
+        font-size: 0.7rem; color: var(--blue); text-decoration: none;
+      }
+      .tx-link:hover { text-decoration: underline; }
     </style>
   </head>
 
   <body>
     <div class="mint-container">
       <div class="mint-card">
+
+        <!-- Header -->
         <div class="logo-area">
           <div class="logo-text">
             NEØ FlowOFF <span class="logo-sep">/</span> $NEOFLW
           </div>
         </div>
 
+        <!-- Stats -->
         <div class="stats-grid">
           <div class="stat-item">
             <div class="stat-label">Network</div>
-            <div class="stat-val">Base</div>
+            <div class="stat-val">Base Mainnet</div>
           </div>
           <div class="stat-item">
-            <div class="stat-label">Minted</div>
-            <div class="stat-val" id="mint-progress">6,820 / 10K</div>
+            <div class="stat-label">Mint Price</div>
+            <div class="stat-val pink" id="stat-price">0.003 ETH</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">You Receive</div>
+            <div class="stat-val" id="stat-amount">1,000 $NEOFLW</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Minted (total)</div>
+            <div class="stat-val" id="stat-supply">—</div>
           </div>
         </div>
 
+        <!-- Terminal -->
         <div class="terminal-box" id="terminal">
           <div class="terminal-header">
-            <span>Node Connection — OK</span>
+            <span>Base Node — Connected</span>
             <div class="status-dot"></div>
           </div>
-          <div id="logs">
-            <div class="log-entry">Booting interaction engine...</div>
-          </div>
+          <div id="logs"></div>
         </div>
 
+        <!-- Error banner -->
+        <div class="error-banner" id="error-banner"></div>
+
+        <!-- CTA -->
         <button class="mint-btn" id="action-btn">
-          <span>Connect Wallet</span>
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="3"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            ><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg
-          >
+          <span id="btn-label">Connect Wallet</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="3"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14"/><path d="M12 5l7 7-7 7"/>
+          </svg>
         </button>
+
+        <a class="tx-link" id="tx-link" target="_blank" rel="noopener">
+          View transaction on Basescan ↗
+        </a>
 
         <div class="back-link">
           <a href="/">← Return to Overview</a>
         </div>
+
       </div>
     </div>
 
-    <script is:inline>
-      const btn = document.getElementById("action-btn");
-      const logs = document.getElementById("logs");
-      const terminal = document.getElementById("terminal");
-      const progress = document.getElementById("mint-progress");
+    <!-- ethers.js v6 — SRI verified -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.1/ethers.umd.min.js"
+      integrity={`sha384-${ETHERS_SRI.replace("sha384-","")}`}
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+      is:inline
+    ></script>
 
-      let state = "disconnected";
-      let minted = 6820;
+    <script define:vars={{ CONTRACT, CHAIN_ID }} is:inline>
+      /* ─────────────────────────────────────────────────────────
+         NEOFLW Mint — real on-chain integration
+         Contract: CONTRACT (Base mainnet, chain 8453)
+      ───────────────────────────────────────────────────────── */
 
-      async function syncSupply() {
-        try {
-          const CONTRACT_ADDR = '0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B';
-          const res = await fetch(`https://api.basescan.org/api?module=stats&action=tokensupply&contractaddress=${CONTRACT_ADDR}`);
-          const data = await res.json();
-          if (data.status === "1" && progress) {
-             const supply = parseInt(data.result) / 1e18;
-             progress.innerHTML = `<span style="color:var(--pink)">${new Intl.NumberFormat().format(supply)}</span> / 1,000,000,000`;
-             minted = supply;
-             addLog("Syncing with Neo-MCP [n33w15if0soji4zorjk089z1q]...", "cmd");
-          }
-        } catch(e) {
-          console.warn("Sync failed, using offline cache.");
-        }
-      }
+      const ABI = [
+        "function getContractInfo() external view returns (uint256 currentSupply, uint256 maxSupply, uint256 mintPrice, uint256 mintAmount, bool mintEnabled, address bridge)",
+        "function publicMint() external payable",
+        "function hasPublicMinted(address) external view returns (bool)",
+      ];
 
-      syncSupply();
-      setInterval(syncSupply, 60000);
+      const BASE_RPC    = "https://mainnet.base.org";
+      const BASESCAN    = "https://basescan.org";
+      const MAX_SUPPLY  = 1_000_000_000;
 
-      function addLog(text, type = "") {
-        const entry = document.createElement("div");
-        entry.className = `log-entry ${type}`;
-        entry.textContent = `> ${text}`;
-        logs.appendChild(entry);
+      // ── DOM refs ────────────────────────────────────────────
+      const btn         = document.getElementById("action-btn");
+      const btnLabel    = document.getElementById("btn-label");
+      const logsEl      = document.getElementById("logs");
+      const terminal    = document.getElementById("terminal");
+      const errorBanner = document.getElementById("error-banner");
+      const txLink      = document.getElementById("tx-link");
+      const statPrice   = document.getElementById("stat-price");
+      const statAmount  = document.getElementById("stat-amount");
+      const statSupply  = document.getElementById("stat-supply");
+
+      let provider, signer, contract, userAddress;
+      let mintEnabled = true;
+
+      // ── Logging ─────────────────────────────────────────────
+      function log(text, type = "info") {
+        const el = document.createElement("div");
+        el.className = `log-entry ${type}`;
+        el.textContent = `> ${text}`;
+        logsEl.appendChild(el);
         terminal.scrollTop = terminal.scrollHeight;
       }
 
-      btn.addEventListener("click", async () => {
-        if (state === "disconnected") {
-          state = "connecting";
-          btn.disabled = true;
-          btn.querySelector("span").textContent = "Connecting...";
+      function showError(msg) {
+        errorBanner.textContent = msg;
+        errorBanner.style.display = "block";
+      }
 
-          addLog("Requesting Wallet Signature...", "warn");
-          await new Promise((r) => setTimeout(r, 1200));
+      function clearError() {
+        errorBanner.style.display = "none";
+        errorBanner.textContent = "";
+      }
 
-          state = "connected";
-          btn.disabled = false;
-          btn.querySelector("span").textContent = "Claim $NEOFLW";
-          addLog("Address Found: 0x89...5513", "cmd");
-        } else if (state === "connected") {
-          state = "minting";
-          btn.disabled = true;
-          btn.querySelector("span").textContent = "Confirming...";
+      // ── Read-only contract data ──────────────────────────────
+      async function loadContractData() {
+        try {
+          const rp = new ethers.JsonRpcProvider(BASE_RPC);
+          const rc = new ethers.Contract(CONTRACT, ABI, rp);
+          const info = await rc.getContractInfo();
 
-          addLog("Gas estimated: 0.0001 ETH");
-          await new Promise((r) => setTimeout(r, 800));
-          addLog("Submitting transaction...", "cmd");
-          await new Promise((r) => setTimeout(r, 2000));
-          addLog(
-            "TX Hash: 0x" + Math.random().toString(16).slice(2, 10) + "...",
-            "cmd",
-          );
+          const supply = ethers.formatEther(info.currentSupply);
+          const price  = ethers.formatEther(info.mintPrice);
+          const amount = ethers.formatEther(info.mintAmount);
+          mintEnabled  = info.mintEnabled;
 
-          state = "success";
-          minted++;
-          progress.textContent = `${minted.toLocaleString()} / 10K`;
-          btn.disabled = false;
-          btn.style.background = "var(--green)";
-          btn.style.boxShadow = "0 15px 35px rgba(0, 255, 136, 0.3)";
-          btn.querySelector("span").textContent = "Success";
-          btn.querySelector("svg").outerHTML =
-            '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-          addLog("MINT COMPLETE. Assets synced.", "cmd");
+          statSupply.textContent = `${Number(supply).toLocaleString()} / ${MAX_SUPPLY.toLocaleString()}`;
+          statPrice.textContent  = `${price} ETH`;
+          statAmount.textContent = `${Number(amount).toLocaleString()} $NEOFLW`;
+
+          const pct = ((Number(supply) / MAX_SUPPLY) * 100).toFixed(4);
+          log(`Supply loaded: ${Number(supply).toLocaleString()} minted (${pct}%)`, "cmd");
+
+          if (!mintEnabled) {
+            btn.disabled = true;
+            btnLabel.textContent = "Minting Disabled";
+            log("Minting currently paused by contract.", "warn");
+          }
+        } catch (e) {
+          log("RPC read failed — showing cached data.", "warn");
+          // BaseScan fallback for supply
+          syncSupplyFromBaseScan();
         }
-      });
+      }
 
-      // Intro
-      setTimeout(() => addLog("Chain: Base Mainnet"), 400);
-      setTimeout(() => addLog("Protocol ready for minting."), 700);
+      async function syncSupplyFromBaseScan() {
+        try {
+          const res  = await fetch(`https://api.basescan.org/api?module=stats&action=tokensupply&contractaddress=${CONTRACT}`);
+          const data = await res.json();
+          if (data.status === "1") {
+            const supply = parseInt(data.result) / 1e18;
+            statSupply.textContent = `${supply.toLocaleString()} / ${MAX_SUPPLY.toLocaleString()}`;
+          }
+        } catch (_) { /* silent */ }
+      }
+
+      // ── Network check / switch ───────────────────────────────
+      async function ensureBaseNetwork() {
+        const chainId = await window.ethereum.request({ method: "eth_chainId" });
+        if (chainId === CHAIN_ID) return true;
+
+        log("Switching to Base Mainnet...", "warn");
+        try {
+          await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: CHAIN_ID }] });
+          return true;
+        } catch (switchErr) {
+          if (switchErr.code === 4902) {
+            await window.ethereum.request({
+              method: "wallet_addEthereumChain",
+              params: [{
+                chainId: CHAIN_ID,
+                chainName: "Base",
+                nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+                rpcUrls: ["https://mainnet.base.org"],
+                blockExplorerUrls: [BASESCAN],
+              }],
+            });
+            return true;
+          }
+          throw switchErr;
+        }
+      }
+
+      // ── Connect wallet ───────────────────────────────────────
+      async function connectWallet() {
+        clearError();
+        if (!window.ethereum) {
+          showError("No wallet detected. Please install MetaMask or a compatible Web3 wallet.");
+          return;
+        }
+
+        btn.disabled = true;
+        btnLabel.textContent = "Connecting…";
+        log("Requesting wallet access…");
+
+        try {
+          const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+          userAddress = accounts[0];
+
+          await ensureBaseNetwork();
+
+          provider = new ethers.BrowserProvider(window.ethereum);
+          signer   = await provider.getSigner();
+          contract = new ethers.Contract(CONTRACT, ABI, signer);
+
+          const short = `${userAddress.slice(0,6)}…${userAddress.slice(-4)}`;
+          log(`Connected: ${short}`, "cmd");
+
+          // Check if already minted
+          const hasMinted = await contract.hasPublicMinted(userAddress);
+          if (hasMinted) {
+            btn.disabled = false;
+            btn.classList.add("success");
+            btnLabel.textContent = "Already Minted ✓";
+            log("This wallet has already minted $NEOFLW.", "cmd");
+            return;
+          }
+
+          btn.disabled = false;
+          btnLabel.textContent = "Mint $NEOFLW";
+          log("Ready. Click to mint.", "cmd");
+          btn.onclick = doMint;
+
+        } catch (e) {
+          btn.disabled = false;
+          btnLabel.textContent = "Connect Wallet";
+          if (e.code !== 4001) showError(`Connection failed: ${e.message}`);
+          log("Connection cancelled.", "warn");
+        }
+      }
+
+      // ── Mint ─────────────────────────────────────────────────
+      async function doMint() {
+        clearError();
+        btn.disabled = true;
+        btnLabel.textContent = "Preparing…";
+
+        try {
+          await ensureBaseNetwork();
+
+          // Re-fetch price in case it changed
+          const rp   = new ethers.JsonRpcProvider(BASE_RPC);
+          const rc   = new ethers.Contract(CONTRACT, ABI, rp);
+          const info = await rc.getContractInfo();
+          const price = info.mintPrice;
+
+          // Balance check
+          const balance = await provider.getBalance(userAddress);
+          if (balance < price) {
+            throw new Error(`Insufficient ETH: you have ${Number(ethers.formatEther(balance)).toFixed(5)} but need ${ethers.formatEther(price)} ETH + gas.`);
+          }
+
+          log(`Price confirmed: ${ethers.formatEther(price)} ETH`, "info");
+          log("Waiting for wallet confirmation…", "warn");
+          btnLabel.textContent = "Confirm in Wallet…";
+
+          const tx = await contract.publicMint({ value: price });
+          log(`TX submitted: ${tx.hash.slice(0,10)}…`, "cmd");
+          btnLabel.textContent = "Confirming…";
+
+          const receipt = await tx.wait();
+          log(`Confirmed in block ${receipt.blockNumber} ✓`, "cmd");
+
+          // Success state
+          btn.classList.add("success");
+          btn.disabled = false;
+          btnLabel.textContent = "Minted Successfully! ✓";
+
+          txLink.href = `${BASESCAN}/tx/${tx.hash}`;
+          txLink.style.display = "block";
+
+          // Refresh supply
+          await loadContractData();
+
+        } catch (e) {
+          btn.disabled = false;
+          btnLabel.textContent = "Retry Mint";
+          btn.onclick = doMint;
+
+          let msg = e.message || "Unknown error";
+          if (e.reason)            msg = e.reason;
+          if (e.code === 4001)     msg = "Transaction rejected by user.";
+          if (msg.includes("already")) msg = "This wallet has already minted.";
+
+          showError(msg);
+          log(`Error: ${msg}`, "warn");
+        }
+      }
+
+      // ── Init ─────────────────────────────────────────────────
+      btn.onclick = connectWallet;
+
+      window.ethereum?.on("chainChanged",    () => window.location.reload());
+      window.ethereum?.on("accountsChanged", () => window.location.reload());
+
+      // Startup sequence
+      log("Chain: Base Mainnet (8453)", "info");
+      log("Loading contract state…");
+      loadContractData();
+      setInterval(syncSupplyFromBaseScan, 60_000);
     </script>
   </body>
 </html>

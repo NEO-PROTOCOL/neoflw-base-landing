@@ -1,0 +1,353 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import HeroSection from '../components/HeroSection.astro';
+import ProofSection from '../components/ProofSection.astro';
+import StatsBar from '../components/StatsBar.astro';
+import TokenomicsSection from '../components/TokenomicsSection.astro';
+import ChartSection from '../components/ChartSection.astro';
+import VerifySection from '../components/VerifySection.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout>
+  <Nav />
+  <HeroSection />
+  <ProofSection />
+  <StatsBar />
+  <TokenomicsSection />
+  <ChartSection />
+  <VerifySection />
+  <Footer />
+
+  <!-- ethers.js com SRI -->
+  <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.1/ethers.umd.min.js"
+          integrity="sha384-xeyyvbIlX+FahWHIZR6gjoC4A1i44cTBxZ330euRbtiXZwfcVDWVeOuJ4sGx8R2d"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <!-- Main script -->
+  <script is:inline>
+    const CONTRACT_ADDRESS = "0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b";
+    const ABI = [
+        "function getContractInfo() external view returns (uint256 currentSupply, uint256 maxSupply, uint256 mintPrice, uint256 mintAmount, bool mintEnabled, address bridge)",
+        "function publicMint() external payable",
+        "function hasPublicMinted(address user) external view returns (bool)",
+        "function totalSupply() external view returns (uint256)",
+        "function symbol() external view returns (string)"
+    ];
+
+    let provider, signer, contract;
+    let userAddress = null;
+
+    async function init() {
+        // Default provider for read-only data (Base RPC)
+        const baseRpc = "https://mainnet.base.org";
+        const readProvider = new ethers.JsonRpcProvider(baseRpc);
+        const readContract = new ethers.Contract(CONTRACT_ADDRESS, ABI, readProvider);
+
+        try {
+            const info = await readContract.getContractInfo();
+            updateUI(info);
+        } catch (e) {
+            console.error("Failed to load contract info:", e);
+            // Fallback to static info if RPC fails
+            // BaseScan fallback will populate supply-count via updateLiveStats()
+        }
+
+        setupEventListeners();
+    }
+
+    function updateUI(info) {
+        const currentSupply = ethers.formatEther(info.currentSupply);
+        const maxSupply = ethers.formatEther(info.maxSupply);
+        const price = ethers.formatEther(info.mintPrice);
+        const amount = ethers.formatEther(info.mintAmount);
+        const enabled = info.mintEnabled;
+
+        document.getElementById('supply-count').textContent = Number(currentSupply).toLocaleString('en-US');
+        document.getElementById('info-amount').textContent = `${Number(amount).toLocaleString()} $NEOFLW`;
+        document.getElementById('info-price').textContent = `${price} ETH`;
+
+        const percentage = (Number(currentSupply) / Number(maxSupply)) * 100;
+        document.getElementById('supply-bar').style.width = `${percentage}%`;
+
+        if (!enabled) {
+            const btn = document.getElementById('action-mint-btn');
+            btn.disabled = true;
+            btn.textContent = "Minting Disabled";
+        }
+    }
+
+    async function checkNetwork() {
+        // Use raw window.ethereum to check chainId to avoid ethers v6 NETWORK_ERROR
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        const targetChainId = '0x2105'; // 8453 in hex
+
+        if (chainId !== targetChainId) {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: targetChainId }],
+                });
+            } catch (switchError) {
+                if (switchError.code === 4902) {
+                    await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{
+                            chainId: targetChainId,
+                            chainName: 'Base Mainnet',
+                            nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+                            rpcUrls: ['https://mainnet.base.org'],
+                            blockExplorerUrls: ['https://basescan.org']
+                        }],
+                    });
+                } else {
+                    throw switchError;
+                }
+            }
+            // Small delay to let MetaMask update its internal state
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+    }
+
+    async function toggleWallet() {
+        if (userAddress) {
+            // Disconnect logic (Clear app state)
+            userAddress = null;
+            signer = null;
+            contract = null;
+
+            const connBtn = document.getElementById('connect-btn');
+            connBtn.innerHTML = `Connect Wallet`;
+            connBtn.classList.remove('active');
+
+            const mintBtn = document.getElementById('action-mint-btn');
+            mintBtn.textContent = "Connect Wallet to Mint";
+            mintBtn.classList.remove('connected');
+            mintBtn.disabled = false;
+            mintBtn.style.background = ""; // Reset success color if needed
+
+            console.log("App state cleared.");
+        } else {
+            await connectWallet();
+        }
+    }
+
+    async function connectWallet() {
+        if (window.ethereum) {
+            try {
+                // 1. Force network check/switch BEFORE creating provider
+                await checkNetwork();
+
+                // 2. Clear any existing provider and re-init
+                provider = new ethers.BrowserProvider(window.ethereum);
+
+                const accounts = await provider.send("eth_requestAccounts", []);
+                const addr = accounts[0];
+                const signerInstance = await provider.getSigner();
+
+                // STEP 2: Legal Signature (To avoid legal issues)
+                const termsMsg = `Welcome to NEØ FlowOFF!\n\nBy signing this message, you confirm that you have read and agree to the Terms of Service. You acknowledge that:\n1. $NEOFLW is a utility token for the NEØ ecosystem.\n2. You are not a resident of a sanctioned or prohibited jurisdiction.\n3. You interact with this protocol at your own risk.\n\nAddress: ${addr}`;
+
+                try {
+                    await signerInstance.signMessage(termsMsg);
+                } catch (e) {
+                    console.error("Signature rejected:", e);
+                    throw new Error("Terms of Service signature is required to use this protocol. Please try again and sign the message in your wallet.");
+                }
+
+                // Only set state if SIGNED
+                userAddress = addr;
+                signer = signerInstance;
+                contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+
+                // Update Top Nav Button
+                const shortAddr = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
+                const connBtn = document.getElementById('connect-btn');
+                connBtn.innerHTML = `<span class="dot" style="background:var(--green)"></span> <span class="addr-txt">${shortAddr}</span>`;
+                connBtn.classList.add('active');
+
+                // Check status for Mint
+                const hasMinted = await contract.hasPublicMinted(userAddress);
+                const mintBtn = document.getElementById('action-mint-btn');
+
+                if (hasMinted) {
+                    mintBtn.disabled = true;
+                    mintBtn.textContent = "Already Minted";
+                } else {
+                    mintBtn.textContent = "Mint Now";
+                    mintBtn.classList.add('connected');
+                }
+
+            } catch (error) {
+                console.error("Connection failed:", error);
+                let msg = error.message || "Failed to connect wallet.";
+                if (error.code === 'ACTION_REJECTED' || error.code === 4001) msg = "User rejected connection or signature.";
+                if (error.code === 'BAD_DATA') msg = "Network error: Please ensure you are on Base Mainnet.";
+                alert(msg);
+            }
+        } else {
+            alert("Please install Metamask or another web3 wallet.");
+        }
+    }
+
+    async function doMint() {
+        if (!window.ethereum) {
+            alert("Web3 wallet not found");
+            return;
+        }
+
+        try {
+            // Refresh provider and check network
+            provider = new ethers.BrowserProvider(window.ethereum);
+            await checkNetwork();
+
+            if (!signer) {
+                await connectWallet();
+                if (!signer) return;
+            }
+
+            const mintBtn = document.getElementById('action-mint-btn');
+            mintBtn.textContent = "Checking Balance...";
+            mintBtn.disabled = true;
+
+            // Re-instantiate contract with signer
+            contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+
+            // Fetch balance and price for verification
+            const balance = await provider.getBalance(userAddress);
+            const info = await contract.getContractInfo();
+            const price = info.mintPrice;
+
+            console.log("Wallet Balance:", ethers.formatEther(balance), "ETH");
+            console.log("Mint Price:", ethers.formatEther(price), "ETH");
+
+            if (balance < price) {
+                throw new Error(`Insufficient funds: You have ${Number(ethers.formatEther(balance)).toFixed(5)} ETH but need ${ethers.formatEther(price)} ETH + gas.`);
+            }
+
+            mintBtn.textContent = "Processing Transaction...";
+
+            // Call publicMint with MINT_PRICE
+            const tx = await contract.publicMint({
+                value: price
+            });
+
+            mintBtn.textContent = "Waiting Confirmation...";
+            const receipt = await tx.wait();
+
+            if (receipt.status === 1) {
+                mintBtn.textContent = "✓ Success!";
+                mintBtn.style.background = "var(--green)";
+                mintBtn.style.color = "#000";
+                setTimeout(() => init(), 3000);
+            } else {
+                throw new Error("Transaction failed on-chain");
+            }
+
+        } catch (error) {
+            console.error("Mint failed:", error);
+            const mintBtn = document.getElementById('action-mint-btn');
+            mintBtn.textContent = "Mint Now";
+            mintBtn.disabled = false;
+
+            let errorMsg = "Transaction failed. Please try again.";
+
+            // Detailed error handling
+            if (error.code === 'ACTION_REJECTED' || error.code === 4001) {
+                errorMsg = "User rejected transaction.";
+            } else if (error.code === 'BAD_DATA') {
+                errorMsg = "Network error: Make sure you are on Base network.";
+            } else if (error.message && error.message.includes("Insufficient funds")) {
+                errorMsg = error.message;
+            } else if (error.message && error.message.includes("insufficient funds")) {
+                errorMsg = "Wallet balance too low to cover Mint Price + Gas.";
+            } else if (error.reason) {
+                errorMsg = `Contract error: ${error.reason}`;
+            }
+
+            alert(errorMsg);
+        }
+    }
+
+    async function updateLiveStats() {
+        const POOL = '0xba6f7f1d429c61e1714bd94a1c74414289fe52f1c14473ba005edfd042d3f014';
+        const CONTRACT_ADDR = '0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B';
+
+        function fmt(n) {
+            if (n >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B';
+            if (n >= 1e6) return '$' + (n / 1e6).toFixed(2) + 'M';
+            if (n >= 1e3) return '$' + (n / 1e3).toFixed(1) + 'K';
+            return '$' + n.toFixed(2);
+        }
+
+        try {
+            // GeckoTerminal API — free, no key required
+            const res = await fetch(`https://api.geckoterminal.com/api/v2/networks/base/pools/${POOL}`, {
+                headers: { 'Accept': 'application/json' }
+            });
+            const json = await res.json();
+            const attr = json.data.attributes;
+
+            const price = parseFloat(attr.base_token_price_usd);
+            const vol24 = parseFloat(attr.volume_usd.h24);
+            const mcap = parseFloat(attr.fdv_usd || attr.market_cap_usd || 0);
+
+            document.getElementById('stat-price').textContent = price < 0.01
+                ? '$' + price.toFixed(6)
+                : '$' + price.toFixed(4);
+            document.getElementById('stat-volume').textContent = fmt(vol24);
+            document.getElementById('stat-mcap').textContent = fmt(mcap);
+
+            const badge = document.getElementById('stats-status');
+            badge.style.opacity = '1';
+        } catch (err) {
+            console.warn('Live stats fetch failed:', err);
+        }
+
+        try {
+            // BaseScan — total supply for On-chain Distribution card
+            const MAX_SUPPLY = 1_000_000_000;
+            const supplyRes = await fetch(`https://api.basescan.org/api?module=stats&action=tokensupply&contractaddress=${CONTRACT_ADDR}`);
+            const supplyData = await supplyRes.json();
+            if (supplyData.status === '1') {
+                const supply = parseInt(supplyData.result) / 1e18;
+                const el = document.getElementById('supply-count');
+                if (el) el.textContent = supply.toLocaleString();
+                const bar = document.getElementById('supply-bar');
+                if (bar) bar.style.width = `${(supply / MAX_SUPPLY) * 100}%`;
+            }
+        } catch (err) {
+            console.warn('Supply fetch failed:', err);
+        }
+    }
+
+    function setupEventListeners() {
+        document.getElementById('connect-btn').addEventListener('click', toggleWallet);
+        document.getElementById('action-mint-btn').addEventListener('click', doMint);
+
+        if (window.ethereum) {
+            window.ethereum.on('chainChanged', () => window.location.reload());
+            window.ethereum.on('accountsChanged', () => window.location.reload());
+        }
+
+        // Sync On-Chain Data every 60s
+        updateLiveStats();
+        setInterval(updateLiveStats, 60000);
+    }
+
+    function copyAddr() {
+        const addr = document.getElementById('addr').textContent.trim()
+        navigator.clipboard.writeText(addr).then(() => {
+            const btn = document.querySelector('.chip-copy')
+            const orig = btn.textContent
+            btn.textContent = '✓ copied'
+            btn.style.color = 'var(--green)'
+            setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 2000)
+        })
+    }
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</Layout>
