@@ -199,14 +199,14 @@ import Footer from '../components/Footer.astro';
         }
 
         try {
-            // Refresh provider and check network
-            provider = new ethers.BrowserProvider(window.ethereum);
-            await checkNetwork();
-
+            // If not connected, connectWallet handles accounts + network switch in correct order
             if (!signer) {
                 await connectWallet();
                 if (!signer) return;
             }
+
+            // Wallet is connected — safe to check/switch network now
+            await checkNetwork();
 
             const mintBtn = document.getElementById('action-mint-btn');
             mintBtn.textContent = "Checking Balance...";
