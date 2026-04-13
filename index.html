@@ -1823,12 +1823,12 @@
                                 Claim Airdrop
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:13px;height:13px;flex-shrink:0;"><path d="M12 2v20M5 12l7 7 7-7"/></svg>
                             </a>
-                            <a href="https://app.uniswap.org/swap?outputCurrency=0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b"
+                            <a href="https://app.uniswap.org/swap?chain=base&inputCurrency=USDC&outputCurrency=0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b"
                                 class="btn-outline" target="_blank" rel="noopener">
                                 Buy on Uniswap
                             </a>
                             <a href="https://basescan.org/token/0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b"
-                                class="btn-outline" target="_blank" rel="noopener">Scan</a>
+                                class="btn-outline" target="_blank" rel="noopener">BaseScan</a>
                         </div>
 
                         <!-- Row 2: contract chip — always its own full row -->
@@ -2205,7 +2205,9 @@
             <div class="section-title">Verified on-chain</div>
             <div class="verify-grid">
                 <div class="verify-left">
-                    <div class="verify-ok" style="display:flex;align-items:center;gap:8px;">
+                    <div class="verify-ok" 
+                    style="display:flex; 
+                    align-items:center; gap:8px;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:14px;height:14px;"><polyline points="20 6 9 17 4 12"/></svg>
                         Basescan Verified
                     </div>
@@ -2272,7 +2274,7 @@
                         <span class="link-tile-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                         </span> Website</a>
-                    <a href="https://app.uniswap.org/swap?outputCurrency=0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b" class="link-tile-v2" style="border-color:var(--green);color:var(--green);" target="_blank" rel="noopener">
+                    <a href="https://app.uniswap.org/swap?chain=base&inputCurrency=USDC&outputCurrency=0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b" class="link-tile-v2" style="border-color:var(--green);color:var(--green);" target="_blank" rel="noopener">
                         <span class="link-tile-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
                         </span> Buy $NEOFLW</a>
@@ -2428,17 +2430,7 @@
                     // 3. Re-fetch signer after potential network switch
                     const signerInstance = await provider.getSigner();
 
-                    // STEP 2: Legal Signature (To avoid legal issues)
-                    const termsMsg = `Welcome to NEØ FlowOFF!\n\nBy signing this message, you confirm that you have read and agree to the Terms of Service. You acknowledge that:\n1. $NEOFLW is a utility token for the NEØ ecosystem.\n2. You are not a resident of a sanctioned or prohibited jurisdiction.\n3. You interact with this protocol at your own risk.\n\nAddress: ${addr}`;
-                    
-                    try {
-                        await signerInstance.signMessage(termsMsg);
-                    } catch (e) {
-                        console.error("Signature rejected:", e);
-                        throw new Error("Terms of Service signature is required to use this protocol. Please try again and sign the message in your wallet.");
-                    }
-
-                    // Only set state if SIGNED
+                    // Set state — no off-chain signature required
                     userAddress = addr;
                     signer = signerInstance;
                     contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);

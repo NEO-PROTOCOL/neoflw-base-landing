@@ -61,6 +61,20 @@ import Footer from '../components/Footer.astro';
             <div style="font-size:0.7rem;color:rgba(255,255,255,0.45);font-weight:400;">Opens Coinbase Wallet app</div>
           </div>
         </button>
+        <!-- Uniswap Wallet -->
+        <button onclick="openWalletDeepLink('uniswap')" style="
+          display:flex;align-items:center;gap:1rem;
+          background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+          border-radius:16px;padding:1rem 1.25rem;cursor:pointer;color:#fff;
+          font-family:inherit;font-size:0.95rem;font-weight:600;text-align:left;
+          transition:border-color 0.2s;">
+          <img src="https://app.uniswap.org/favicon.png"
+               width="36" height="36" alt="Uniswap Wallet" style="border-radius:8px;flex-shrink:0;" />
+          <div>
+            <div>Uniswap Wallet</div>
+            <div style="font-size:0.7rem;color:rgba(255,255,255,0.45);font-weight:400;">Opens Uniswap app</div>
+          </div>
+        </button>
         <!-- Rainbow -->
         <button onclick="openWalletDeepLink('rainbow')" style="
           display:flex;align-items:center;gap:1rem;
@@ -129,6 +143,7 @@ import Footer from '../components/Footer.astro';
         const links = {
             metamask: `https://metamask.app.link/dapp/${SITE_URL}`,
             coinbase:  `https://go.cb-w.com/dapp?cb_url=${encodedUrl}`,
+            uniswap:   `https://wallet.uniswap.org/#/open-dapp?url=${encodedUrl}`,
             rainbow:   `https://rnbwapp.com/dapp?url=${encodedUrl}`,
         };
         window.location.href = links[wallet] || links.metamask;
@@ -160,6 +175,7 @@ import Footer from '../components/Footer.astro';
         }
 
         setupEventListeners();
+        await tryAutoReconnect();
     }
 
     function updateUI(info) {
@@ -215,12 +231,39 @@ import Footer from '../components/Footer.astro';
         }
     }
 
+    async function tryAutoReconnect() {
+        const saved = localStorage.getItem('neoflw_addr');
+        if (!saved || !window.ethereum) return;
+        try {
+            const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+            if (accounts[0]?.toLowerCase() === saved.toLowerCase()) {
+                provider = new ethers.BrowserProvider(window.ethereum);
+                signer = await provider.getSigner();
+                userAddress = accounts[0];
+                contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+                const short = `${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
+                const connBtn = document.getElementById('connect-btn');
+                connBtn.innerHTML = `<span class="dot" style="background:var(--green)"></span> <span class="addr-txt">${short}</span>`;
+                connBtn.classList.add('active');
+                const hasMinted = await contract.hasPublicMinted(userAddress);
+                const mintBtn = document.getElementById('action-mint-btn');
+                if (hasMinted) { mintBtn.disabled = true; mintBtn.textContent = "Already Minted"; }
+                else { mintBtn.textContent = "Mint Now"; mintBtn.classList.add('connected'); }
+            } else {
+                localStorage.removeItem('neoflw_addr');
+            }
+        } catch (e) {
+            localStorage.removeItem('neoflw_addr');
+        }
+    }
+
     async function toggleWallet() {
         if (userAddress) {
             // Disconnect logic (Clear app state)
             userAddress = null;
             signer = null;
             contract = null;
+            localStorage.removeItem('neoflw_addr');
 
             const connBtn = document.getElementById('connect-btn');
             connBtn.innerHTML = `Connect Wallet`;
@@ -252,20 +295,10 @@ import Footer from '../components/Footer.astro';
                 // 3. Re-fetch signer after potential network switch
                 const signerInstance = await provider.getSigner();
 
-                // STEP 4: Legal Signature (To avoid legal issues)
-                const termsMsg = `Welcome to NEØ FlowOFF!\n\nBy signing this message, you confirm that you have read and agree to the Terms of Service. You acknowledge that:\n1. $NEOFLW is a utility token for the NEØ ecosystem.\n2. You are not a resident of a sanctioned or prohibited jurisdiction.\n3. You interact with this protocol at your own risk.\n\nAddress: ${addr}`;
-
-                try {
-                    await signerInstance.signMessage(termsMsg);
-                } catch (e) {
-                    console.error("Signature rejected:", e);
-                    throw new Error("Terms of Service signature is required to use this protocol. Please try again and sign the message in your wallet.");
-                }
-
-                // Only set state if SIGNED
                 userAddress = addr;
                 signer = signerInstance;
                 contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+                localStorage.setItem('neoflw_addr', userAddress);
 
                 // Update Top Nav Button
                 const shortAddr = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;

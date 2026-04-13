@@ -395,6 +395,7 @@ const ETHERS_SRI  = "sha384-xeyyvbIlX+FahWHIZR6gjoC4A1i44cTBxZ330euRbtiXZwfcVDWV
           provider = new ethers.BrowserProvider(window.ethereum);
           signer   = await provider.getSigner();
           contract = new ethers.Contract(CONTRACT, ABI, signer);
+          localStorage.setItem('neoflw_addr', userAddress);
 
           const short = `${userAddress.slice(0,6)}…${userAddress.slice(-4)}`;
           log(`Connected: ${short}`, "cmd");
@@ -480,6 +481,39 @@ const ETHERS_SRI  = "sha384-xeyyvbIlX+FahWHIZR6gjoC4A1i44cTBxZ330euRbtiXZwfcVDWV
         }
       }
 
+      // ── Wallet persistence — silent reconnect ────────────────
+      async function tryAutoReconnect() {
+        const saved = localStorage.getItem('neoflw_addr');
+        if (!saved || !window.ethereum) return;
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+          if (accounts[0]?.toLowerCase() !== saved.toLowerCase()) {
+            localStorage.removeItem('neoflw_addr');
+            return;
+          }
+          userAddress = accounts[0];
+          provider = new ethers.BrowserProvider(window.ethereum);
+          signer   = await provider.getSigner();
+          contract = new ethers.Contract(CONTRACT, ABI, signer);
+
+          const short = `${userAddress.slice(0,6)}…${userAddress.slice(-4)}`;
+          log(`Auto-reconnected: ${short}`, "cmd");
+
+          const hasMinted = await contract.hasPublicMinted(userAddress);
+          if (hasMinted) {
+            btn.classList.add("success");
+            btnLabel.textContent = "Already Minted ✓";
+            log("This wallet has already minted $NEOFLW.", "cmd");
+          } else {
+            btnLabel.textContent = "Mint $NEOFLW";
+            btn.onclick = doMint;
+            log("Ready. Click to mint.", "cmd");
+          }
+        } catch (e) {
+          localStorage.removeItem('neoflw_addr');
+        }
+      }
+
       // ── Init ─────────────────────────────────────────────────
       btn.onclick = connectWallet;
 
@@ -491,6 +525,7 @@ const ETHERS_SRI  = "sha384-xeyyvbIlX+FahWHIZR6gjoC4A1i44cTBxZ330euRbtiXZwfcVDWV
       log("Loading contract state…");
       loadContractData();
       setInterval(syncSupplyFromBaseScan, 60_000);
+      tryAutoReconnect();
     </script>
   </body>
 </html>
