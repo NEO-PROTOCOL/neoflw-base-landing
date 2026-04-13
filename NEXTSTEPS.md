@@ -23,3 +23,8 @@
 
 - Perform a final consistency check on the Base Mainnet contract address citations.
 - Optimize asset delivery (images/video weight).
+
+## 5. Environment Integration
+
+- Replace hardcoded `base:app_id` in layout/pages with `import.meta.env.PUBLIC_BASE_APP_ID`, preserving a fallback to the current static value.
+- Define and implement an explicit functional role for `BUILDER_CODE` (tracking attribution and/or link parameter strategy) and document where it is consumed.

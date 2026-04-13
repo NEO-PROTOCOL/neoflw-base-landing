@@ -198,6 +198,22 @@ const i18n = {
         "function symbol() external view returns (string)"
     ];
 
+    // ── Wallet tracking (Turso) ──────────────────────────────────────
+    async function trackWallet(address) {
+        try {
+            await fetch('/api/track', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    address,
+                    page:     window.location.pathname,
+                    referrer: document.referrer || '',
+                    chainId:  '0x2105',
+                }),
+            });
+        } catch (_) { /* silencioso — nunca bloqueia o fluxo */ }
+    }
+
     let provider, signer, contract;
     let userAddress = null;
 
@@ -283,6 +299,10 @@ const i18n = {
                 signer = await provider.getSigner();
                 userAddress = accounts[0];
                 contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+
+                // Atualiza visita no Turso (fire-and-forget)
+                trackWallet(userAddress);
+
                 const short = `${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
                 const connBtn = document.getElementById('connect-btn');
                 connBtn.innerHTML = `<span class="dot" style="background:var(--green)"></span> <span class="addr-txt">${short}</span>`;
@@ -341,6 +361,9 @@ const i18n = {
                 signer = signerInstance;
                 contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
                 localStorage.setItem('neoflw_addr', userAddress);
+
+                // Registra wallet no Turso (fire-and-forget)
+                trackWallet(userAddress);
 
                 // Update Top Nav Button
                 const shortAddr = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;

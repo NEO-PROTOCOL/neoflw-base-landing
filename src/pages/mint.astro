@@ -268,6 +268,22 @@ const ETHERS_SRI  = "sha384-xeyyvbIlX+FahWHIZR6gjoC4A1i44cTBxZ330euRbtiXZwfcVDWV
         "function hasPublicMinted(address) external view returns (bool)",
       ];
 
+      // ── Wallet tracking (Turso) ────────────────────────────────────
+      async function trackWallet(address) {
+        try {
+          await fetch('/api/track', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              address,
+              page:     window.location.pathname,
+              referrer: document.referrer || '',
+              chainId:  '0x2105',
+            }),
+          });
+        } catch (_) { /* silencioso — nunca bloqueia o fluxo */ }
+      }
+
       const BASE_RPC    = "https://mainnet.base.org";
       const BASESCAN    = "https://basescan.org";
       const MAX_SUPPLY  = 1_000_000_000;
@@ -397,6 +413,9 @@ const ETHERS_SRI  = "sha384-xeyyvbIlX+FahWHIZR6gjoC4A1i44cTBxZ330euRbtiXZwfcVDWV
           contract = new ethers.Contract(CONTRACT, ABI, signer);
           localStorage.setItem('neoflw_addr', userAddress);
 
+          // Registra wallet no Turso (fire-and-forget)
+          trackWallet(userAddress);
+
           const short = `${userAddress.slice(0,6)}…${userAddress.slice(-4)}`;
           log(`Connected: ${short}`, "cmd");
 
@@ -495,6 +514,9 @@ const ETHERS_SRI  = "sha384-xeyyvbIlX+FahWHIZR6gjoC4A1i44cTBxZ330euRbtiXZwfcVDWV
           provider = new ethers.BrowserProvider(window.ethereum);
           signer   = await provider.getSigner();
           contract = new ethers.Contract(CONTRACT, ABI, signer);
+
+          // Atualiza visita no Turso (fire-and-forget)
+          trackWallet(userAddress);
 
           const short = `${userAddress.slice(0,6)}…${userAddress.slice(-4)}`;
           log(`Auto-reconnected: ${short}`, "cmd");
