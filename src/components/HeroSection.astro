@@ -1,4 +1,10 @@
 ---
+interface Props {
+    locale?: 'en' | 'pt-BR';
+}
+const { locale = 'en' } = Astro.props;
+const pt = locale === 'pt-BR';
+const mintPath = pt ? '/pt-br/mint' : '/mint';
 ---
 <section class="hero">
     <div class="wrap">
@@ -10,34 +16,42 @@
                     <span class="line2">FlowOFF <span class="token-part">Token</span></span>
                 </h1>
                 <p class="hero-desc anim-3">
-                    The <strong>NEØ FlowOFF</strong> ecosystem's native token, $NEOFLW, is an ERC-20 that is deployed on the Base mainnet and has governance, staking, and on-chain claims.
+                    {pt ? (
+                        <>
+                            O token nativo do ecossistema <strong>NEØ FlowOFF</strong>, $NEOFLW, é um ERC-20 implantado na Base mainnet com governança, staking e reivindicações on-chain.
+                        </>
+                    ) : (
+                        <>
+                            The <strong>NEØ FlowOFF</strong> ecosystem's native token, $NEOFLW, is an ERC-20 that is deployed on the Base mainnet and has governance, staking, and on-chain claims.
+                        </>
+                    )}
                 </p>
                 <!-- ─── HERO ACTIONS (two disciplined rows) ─── -->
                 <div class="hero-actions anim-4">
 
                     <!-- Row 1: primary CTAs — inline, flush to grid edge -->
                     <div class="hero-ctas">
-                        <a href="/mint" class="btn-fill" style="background:var(--pink);box-shadow:0 10px 30px var(--pink-glow);color:#fff;">
-                            Claim Airdrop
+                        <a href={mintPath} class="btn-fill" style="background:var(--pink);box-shadow:0 10px 30px var(--pink-glow);color:#fff;">
+                            {pt ? 'Resgatar Airdrop' : 'Claim Airdrop'}
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:13px;height:13px;flex-shrink:0;"><path d="M12 2v20M5 12l7 7 7-7"/></svg>
                         </a>
                         <a href="https://app.uniswap.org/swap?chain=base&inputCurrency=USDC&outputCurrency=0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b"
                             class="btn-outline" target="_blank" rel="noopener">
-                            Buy on Uniswap
+                            {pt ? 'Comprar na Uniswap' : 'Buy on Uniswap'}
                         </a>
                         <a href="https://basescan.org/token/0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b"
-                            class="btn-outline" target="_blank" rel="noopener">Scan</a>
+                            class="btn-outline" target="_blank" rel="noopener">{pt ? 'Explorar' : 'Scan'}</a>
                     </div>
 
                     <!-- Row 2: contract chip — always its own full row -->
                     <div class="hero-contract-row anim-5">
                         <div class="contract-chip">
-                            <span class="chip-label">Contract</span>
+                            <span class="chip-label">{pt ? 'Contrato' : 'Contract'}</span>
                             <div style="background:rgba(3, 3, 5, 0.95);padding:4px 10px;border-radius:12px;border:1px solid var(--border-b);display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
                                 <span class="chip-addr" id="addr" style="flex:1;min-width:0;color:var(--text-2);font-weight:700;">0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B</span>
                                 <button class="chip-copy" onclick="copyAddr()" style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px;color:var(--pink-soft);"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                                    copy
+                                    {pt ? 'copiar' : 'copy'}
                                 </button>
                             </div>
                         </div>
@@ -65,19 +79,19 @@
                             </div>
                             <div class="hc-badge" style="display:flex;align-items:center;gap:4px;">
                                 <svg viewBox="0 0 24 24" fill="currentColor" style="width:10px;height:10px;color:var(--green);"><circle cx="12" cy="12" r="10"/></svg>
-                                Live
+                                {pt ? 'Ao vivo' : 'Live'}
                             </div>
                         </div>
-                        <div class="hc-supply-label">Total Supply</div>
+                        <div class="hc-supply-label">{pt ? 'Supply Total' : 'Total Supply'}</div>
                         <div class="hc-supply">1,000,000,000 <span>NEOFLW</span></div>
                         <div class="hc-divider"></div>
                         <div class="hc-meta">
                             <div>
-                                <div class="hc-meta-label">Network</div>
+                                <div class="hc-meta-label">{pt ? 'Rede' : 'Network'}</div>
                                 <div class="hc-meta-val">Base L2</div>
                             </div>
                             <div>
-                                <div class="hc-meta-label">Standard</div>
+                                <div class="hc-meta-label">{pt ? 'Padrão' : 'Standard'}</div>
                                 <div class="hc-meta-val">ERC-20</div>
                             </div>
                             <div>
@@ -90,7 +104,7 @@
                             </div>
                         </div>
                         <div class="hc-bar">
-                            <div class="hc-bar-row"><span>Circulating</span><span id="hc-circ-pct">—</span></div>
+                                <div class="hc-bar-row"><span>{pt ? 'Circulante' : 'Circulating'}</span><span id="hc-circ-pct">—</span></div>
                             <div class="hc-bar-track">
                                 <div class="hc-bar-fill" id="hc-bar-fill" style="width:0%"></div>
                             </div>
@@ -99,13 +113,13 @@
                         <!-- Interactive Proof Widget -->
                         <div style="margin-top:1.5rem;padding:0.75rem;border-radius:12px;background:rgba(0,255,136,0.05);border:1px solid rgba(0,255,136,0.1);display:flex;align-items:center;gap:10px;">
                             <div style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);"></div>
-                            <span style="font-size:0.65rem;font-family:var(--mono);color:var(--green);letter-spacing:0.05em;">SMART_VALIDATION: PASS</span>
-                            <a href="#verify" style="margin-left:auto;font-size:0.6rem;color:var(--text-3);text-decoration:underline;">View Proof</a>
+                            <span style="font-size:0.65rem;font-family:var(--mono);color:var(--green);letter-spacing:0.05em;">{pt ? 'VALIDAÇÃO_SMART: OK' : 'SMART_VALIDATION: PASS'}</span>
+                            <a href="#verify" style="margin-left:auto;font-size:0.6rem;color:var(--text-3);text-decoration:underline;">{pt ? 'Ver Prova' : 'View Proof'}</a>
                         </div>
                     </div>
                     <div class="float-badge" style="display:flex;align-items:center;gap:6px;">
                         <svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;color:#ff007a;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                        Uniswap v3 Pool
+                        {pt ? 'Pool Uniswap v3' : 'Uniswap v3 Pool'}
                     </div>
                 </div>
             </div>

@@ -1,16 +1,22 @@
 ---
+interface Props {
+    locale?: 'en' | 'pt-BR';
+}
+const { locale = 'en' } = Astro.props;
+const pt = locale === 'pt-BR';
+const mintPath = pt ? '/pt-br/mint' : '/mint';
 ---
 <section class="bento-section" id="tokenomics">
     <div class="wrap">
-        <div class="section-eyebrow">01 — Tokenomics &amp; Features</div>
-        <div class="section-title" id="features">Best-in-class token</div>
+        <div class="section-eyebrow">{pt ? '01 - Tokenomics e Recursos' : '01 - Tokenomics & Features'}</div>
+        <div class="section-title" id="features">{pt ? 'Token de classe mundial' : 'Best-in-class token'}</div>
 
         <div class="bento">
 
             <div class="bc bc-supply bc-w8 interactive-mint">
-                <div class="bc-label">On-chain Distribution</div>
+                <div class="bc-label">{pt ? 'Distribuição On-Chain' : 'On-chain Distribution'}</div>
                 <div class="bc-number-huge" id="supply-count">—</div>
-                <div class="bc-sublabel">$NEOFLW minted of 1,000,000,000 max supply. One mint per wallet.</div>
+                <div class="bc-sublabel">{pt ? '$NEOFLW cunhados de um máximo de 1.000.000.000. Um mint por wallet.' : '$NEOFLW minted of 1,000,000,000 max supply. One mint per wallet.'}</div>
 
                 <div class="supply-progress">
                     <div class="supply-bar" id="supply-bar" style="width: 100%;"></div>
@@ -19,16 +25,16 @@
                 <div class="mint-card">
                     <div class="mint-stats">
                         <div class="mint-stat">
-                            <span class="stat-label">Mint Amount</span>
+                            <span class="stat-label">{pt ? 'Quantidade de Mint' : 'Mint Amount'}</span>
                             <span class="stat-value" id="info-amount">1,000 $NEOFLW</span>
                         </div>
                         <div class="mint-stat">
-                            <span class="stat-label">Price</span>
+                            <span class="stat-label">{pt ? 'Preço' : 'Price'}</span>
                             <span class="stat-value" id="info-price">0.003 ETH</span>
                         </div>
                     </div>
                     <div class="mint-actions">
-                        <a href="/mint" class="mint-btn" id="action-mint-btn" style="text-decoration:none;display:flex;align-items:center;justify-content:center;">Direct Mint Access</a>
+                        <a href={mintPath} class="mint-btn" id="action-mint-btn" style="text-decoration:none;display:flex;align-items:center;justify-content:center;">{pt ? 'Acesso Direto ao Mint' : 'Direct Mint Access'}</a>
                     </div>
                 </div>
 
@@ -41,21 +47,20 @@
                 <div class="verified-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:24px;height:24px;"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
-                <div class="bc-label">Verification</div>
-                <div class="bc-title" style="color:var(--blue);">On-chain<br>Verified</div>
+                <div class="bc-label">{pt ? 'Verificação' : 'Verification'}</div>
+                <div class="bc-title" style="color:var(--blue);">{pt ? 'Verificado<br>on-chain' : 'On-chain<br>Verified'}</div>
                 <div style="font-size:0.78rem;color:var(--text-2);margin-top:0.5rem;line-height:1.6;">Source code
-                    publicly verifiable on Basescan. Zero proxies hiding logic.</div>
+                    {pt ? 'publicamente verificável na Basescan. Zero proxies escondendo lógica.' : 'publicly verifiable on Basescan. Zero proxies hiding logic.'}</div>
                 <a href="https://basescan.org/token/0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b" target="_blank"
                     rel="noopener"
-                    style="display:inline-block;margin-top:1.25rem;padding:0.5rem 1rem;border-radius:999px;background:var(--blue-dim);border:1px solid rgba(0,82,255,0.25);color:var(--blue);font-size:0.75rem;font-weight:600;text-decoration:none;">View
-                    Contract <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:10px;height:10px;margin-bottom:-1px;"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+                    style="display:inline-block;margin-top:1.25rem;padding:0.5rem 1rem;border-radius:999px;background:var(--blue-dim);border:1px solid rgba(0,82,255,0.25);color:var(--blue);font-size:0.75rem;font-weight:600;text-decoration:none;">{pt ? 'Ver Contrato' : 'View Contract'} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:10px;height:10px;margin-bottom:-1px;"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
 
                 <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(0,82,255,0.15);display:flex;flex-direction:column;gap:0.75rem;">
-                    <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue);font-weight:800;opacity:0.7;">Core Technology Partner</div>
+                    <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue);font-weight:800;opacity:0.7;">{pt ? 'Parceiro Tecnológico Central' : 'Core Technology Partner'}</div>
                     <a href="https://nsfactory.xyz" target="_blank" rel="noopener" style="display:inline-block;transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);" onmouseover="this.style.transform='translateX(4px)'" onmouseout="this.style.transform='none'">
                         <img src="/logo_name_horizontal_color.png" alt="NEØ SMART FACTORY" style="height:24px;display:block;">
                     </a>
-                    <div style="font-size:0.7rem;color:var(--text-3);line-height:1.4;">Developed by the NEØ SMART FACTORY team for secure, institutional-grade smart contracts on Base.</div>
+                    <div style="font-size:0.7rem;color:var(--text-3);line-height:1.4;">{pt ? 'Desenvolvido pelo time NEØ SMART FACTORY para contratos inteligentes seguros e de nível institucional na Base.' : 'Developed by the NEØ SMART FACTORY team for secure, institutional-grade smart contracts on Base.'}</div>
                 </div>
             </div>
 
@@ -65,20 +70,20 @@
                 </div>
                 <div class="network-name">Base L2</div>
                 <div class="network-sub">Chain ID 8453</div>
-                <div style="font-size:0.75rem;color:var(--text-3);margin-top:0.25rem;">Ethereum Layer 2</div>
+                <div style="font-size:0.75rem;color:var(--text-3);margin-top:0.25rem;">{pt ? 'Ethereum Camada 2' : 'Ethereum Layer 2'}</div>
             </div>
 
             <div class="bc bc-w9">
-                <div class="bc-label">Token Features</div>
-                <div class="bc-title">Built for the ecosystem</div>
+                <div class="bc-label">{pt ? 'Recursos do Token' : 'Token Features'}</div>
+                <div class="bc-title">{pt ? 'Construído para o ecossistema' : 'Built for the ecosystem'}</div>
                 <div class="feature-list">
                     <div class="feature-row">
                         <div class="feature-row-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
                         </div>
                         <div>
-                            <div style="font-weight:600;color:var(--text);font-size:0.85rem;">Burnable</div>
-                            <div style="font-size:0.75rem;margin-top:0.15rem;">Holders can permanently burn tokens, enabling deflationary mechanics.</div>
+                            <div style="font-weight:600;color:var(--text);font-size:0.85rem;">{pt ? 'Burnable' : 'Burnable'}</div>
+                            <div style="font-size:0.75rem;margin-top:0.15rem;">{pt ? 'Holders podem queimar tokens permanentemente, habilitando mecânicas deflacionárias.' : 'Holders can permanently burn tokens, enabling deflationary mechanics.'}</div>
                         </div>
                         <span class="feature-row-badge">EIP-3664</span>
                     </div>
@@ -87,10 +92,9 @@
                             <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                         </div>
                         <div>
-                            <div style="font-weight:600;color:var(--text);font-size:0.85rem;">Gasless Approvals
+                            <div style="font-weight:600;color:var(--text);font-size:0.85rem;">{pt ? 'Aprovações Sem Gas' : 'Gasless Approvals'}
                             </div>
-                            <div style="font-size:0.75rem;margin-top:0.15rem;">EIP-2612 Permit: off-chain approval
-                                signatures, zero extra transactions.</div>
+                            <div style="font-size:0.75rem;margin-top:0.15rem;">{pt ? 'EIP-2612 Permit: assinaturas de aprovação off-chain, zero transações extras.' : 'EIP-2612 Permit: off-chain approval signatures, zero extra transactions.'}</div>
                         </div>
                         <span class="feature-row-badge">EIP-2612</span>
                     </div>
@@ -99,8 +103,8 @@
                             <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M21 16.5V7.5L12 2.25L3 7.5V16.5L12 21.75L21 16.5ZM12 4.125L18.75 8.25V15.75L12 19.875L5.25 15.75V8.25L12 4.125Z"/></svg>
                         </div>
                         <div>
-                            <div style="font-weight:600;color:var(--text);font-size:0.85rem;">Ownable 2-Step</div>
-                            <div style="font-size:0.75rem;margin-top:0.15rem;">Two-step ownership transfer prevents accidental admin key loss.</div>
+                            <div style="font-weight:600;color:var(--text);font-size:0.85rem;">{pt ? 'Ownable 2-Step' : 'Ownable 2-Step'}</div>
+                            <div style="font-size:0.75rem;margin-top:0.15rem;">{pt ? 'Transferência de propriedade em duas etapas evita perda acidental de chave admin.' : 'Two-step ownership transfer prevents accidental admin key loss.'}</div>
                         </div>
                         <span class="feature-row-badge">Security</span>
                     </div>
@@ -109,17 +113,16 @@
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                         </div>
                         <div>
-                            <div style="font-weight:600;color:var(--text);font-size:0.85rem;">Bridge Ready</div>
-                            <div style="font-size:0.75rem;margin-top:0.15rem;">Designed for multichain via Base
-                                bridge and LayerZero OFT standard.</div>
+                            <div style="font-weight:600;color:var(--text);font-size:0.85rem;">{pt ? 'Pronto para Bridge' : 'Bridge Ready'}</div>
+                            <div style="font-size:0.75rem;margin-top:0.15rem;">{pt ? 'Desenhado para multichain via bridge da Base e padrão LayerZero OFT.' : 'Designed for multichain via Base bridge and LayerZero OFT standard.'}</div>
                         </div>
-                        <span class="feature-row-badge">Multichain</span>
+                        <span class="feature-row-badge">{pt ? 'Multichain' : 'Multichain'}</span>
                     </div>
                 </div>
             </div>
 
             <div class="bc bc-code bc-w6">
-                <div class="bc-label">Contract Interface</div>
+                <div class="bc-label">{pt ? 'Interface do Contrato' : 'Contract Interface'}</div>
                 <div class="bc-title" style="font-family:var(--mono);font-size:0.95rem;">NeoFlwToken.sol</div>
                 <div class="code-block">
                     <span class="code-line"><span class="c-cmt">// NEOFLW ERC-20 · Base Mainnet</span></span>

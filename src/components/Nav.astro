@@ -1,18 +1,26 @@
 ---
+interface Props {
+    locale?: 'en' | 'pt-BR';
+}
+const { locale = 'en' } = Astro.props;
+const pt = locale === 'pt-BR';
+const mintPath = pt ? '/pt-br/mint' : '/mint';
+const switchPath = pt ? '/' : '/pt-br/';
 ---
 <nav>
     <div class="nav-pill">
         <div class="nav-inner">
             <a href="#" class="nav-logo"><span class="neo">NEØ</span> FlowOFF</a>
             <ul class="nav-links">
-                <li><a href="#tokenomics">Tokenomics</a></li>
-                <li><a href="#features">Features</a></li>
-                <li><a href="#chart">Chart</a></li>
-                <li><a href="#verify">Verify</a></li>
-                <li><a href="/mint" class="nav-special">Mint</a></li>
+                <li><a href="#tokenomics">{pt ? 'Tokenomics' : 'Tokenomics'}</a></li>
+                <li><a href="#features">{pt ? 'Recursos' : 'Features'}</a></li>
+                <li><a href="#chart">{pt ? 'Gráfico' : 'Chart'}</a></li>
+                <li><a href="#verify">{pt ? 'Verificação' : 'Verify'}</a></li>
+                <li><a href={mintPath} class="nav-special">Mint</a></li>
+                <li><a href={switchPath} class="nav-special">{pt ? 'EN' : 'PT'}</a></li>
             </ul>
             <button id="connect-btn" class="nav-wallet-btn">
-                <span class="dot"></span> Connect Wallet
+                <span class="dot"></span> {pt ? 'Conectar Wallet' : 'Connect Wallet'}
             </button>
         </div>
     </div>

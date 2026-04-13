@@ -1,26 +1,30 @@
 ---
+interface Props {
+    locale?: 'en' | 'pt-BR';
+}
+const { locale = 'en' } = Astro.props;
+const pt = locale === 'pt-BR';
 ---
 <section class="verify-section" id="verify">
     <div class="wrap">
-        <div class="section-eyebrow">03 — Transparency</div>
-        <div class="section-title">Verified on-chain</div>
+        <div class="section-eyebrow">{pt ? '03 - Transparência' : '03 - Transparency'}</div>
+        <div class="section-title">{pt ? 'Verificado on-chain' : 'Verified on-chain'}</div>
         <div class="verify-grid">
             <div class="verify-left">
                 <div class="verify-ok" style="display:flex;align-items:center;gap:8px;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:14px;height:14px;"><polyline points="20 6 9 17 4 12"/></svg>
-                    Basescan Verified
+                    {pt ? 'Basescan Verificado' : 'Basescan Verified'}
                 </div>
-                <div class="verify-heading"><span class="ok">Code</span> is law.</div>
-                <p class="verify-body">Every line of NEOFLW contract code is publicly verifiable. No proxies hiding
-                    logic. No upgradeable surprises. Audit it yourself.</p>
+                <div class="verify-heading"><span class="ok">{pt ? 'Código' : 'Code'}</span> {pt ? 'é lei.' : 'is law.'}</div>
+                <p class="verify-body">{pt ? 'Cada linha do contrato NEOFLW é publicamente verificável. Sem proxies escondendo lógica. Sem surpresas de upgrade. Audite você mesmo.' : 'Every line of NEOFLW contract code is publicly verifiable. No proxies hiding logic. No upgradeable surprises. Audit it yourself.'}</p>
                 <ul class="verify-checklist">
-                    <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:10px;height:10px;"><polyline points="20 6 9 17 4 12"/></svg></span> Source code match verified on Basescan</li>
-                    <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:10px;height:10px;"><polyline points="20 6 9 17 4 12"/></svg></span> No hidden mint functions beyond publicMint</li>
-                    <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:10px;height:10px;"><polyline points="20 6 9 17 4 12"/></svg></span> Ownable2Step — no single point of failure</li>
-                    <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:10px;height:10px;"><polyline points="20 6 9 17 4 12"/></svg></span> EIP-2612 Permit audited by community</li>
+                    <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:10px;height:10px;"><polyline points="20 6 9 17 4 12"/></svg></span> {pt ? 'Correspondência do source code verificada na Basescan' : 'Source code match verified on Basescan'}</li>
+                    <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:10px;height:10px;"><polyline points="20 6 9 17 4 12"/></svg></span> {pt ? 'Sem funções ocultas de mint além de publicMint' : 'No hidden mint functions beyond publicMint'}</li>
+                    <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:10px;height:10px;"><polyline points="20 6 9 17 4 12"/></svg></span> {pt ? 'Ownable2Step sem ponto único de falha' : 'Ownable2Step no single point of failure'}</li>
+                    <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:10px;height:10px;"><polyline points="20 6 9 17 4 12"/></svg></span> {pt ? 'EIP-2612 Permit auditado pela comunidade' : 'EIP-2612 Permit audited by community'}</li>
                 </ul>
                 <a href="https://basescan.org/token/0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b" class="btn-fill"
-                    target="_blank" rel="noopener">View Contract on Basescan ↗</a>
+                    target="_blank" rel="noopener">{pt ? 'Ver Contrato na Basescan ↗' : 'View Contract on Basescan ↗'}</a>
             </div>
             <div class="verify-right">
                 <div class="code-header">

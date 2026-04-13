@@ -1,25 +1,30 @@
 ---
+interface Props {
+    locale?: 'en' | 'pt-BR';
+}
+const { locale = 'en' } = Astro.props;
+const pt = locale === 'pt-BR';
 ---
 <section class="stats-section">
     <div class="wrap">
         <div class="stats-row">
             <div class="stat-cell">
-                <div class="stat-cell-label">Supply</div>
+                <div class="stat-cell-label">{pt ? 'Supply' : 'Supply'}</div>
                 <div class="stat-cell-val pink">1B</div>
             </div>
             <div class="stat-cell">
-                <div class="stat-cell-label">Network</div>
+                <div class="stat-cell-label">{pt ? 'Rede' : 'Network'}</div>
                 <div class="stat-cell-val">Base</div>
             </div>
             <div class="stat-cell">
-                <div class="stat-cell-label">Standard</div>
+                <div class="stat-cell-label">{pt ? 'Padrão' : 'Standard'}</div>
                 <div class="stat-cell-val">ERC-20</div>
             </div>
             <div class="stat-cell">
-                <div class="stat-cell-label">Status</div>
+                <div class="stat-cell-label">{pt ? 'Status' : 'Status'}</div>
                 <div class="stat-cell-val green" style="display:flex;align-items:center;gap:4px;justify-content:flex-end;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:12px;height:12px;"><polyline points="20 6 9 17 4 12"/></svg>
-                    Live
+                    {pt ? 'Ao vivo' : 'Live'}
                 </div>
             </div>
             <div class="stat-cell">

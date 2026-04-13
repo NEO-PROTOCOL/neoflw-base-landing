@@ -1,38 +1,43 @@
 ---
+interface Props {
+    locale?: 'en' | 'pt-BR';
+}
+const { locale = 'en' } = Astro.props;
+const pt = locale === 'pt-BR';
 ---
 <!-- NEW INTERACTIVE BENTO GRID FOR PROOF -->
 <section class="bento-section" id="proof">
     <div class="wrap">
-        <div class="section-eyebrow">On-Chain Evidence</div>
-        <h2 class="section-title">Protocol Integrity</h2>
+        <div class="section-eyebrow">{pt ? 'Evidência On-Chain' : 'On-Chain Evidence'}</div>
+        <h2 class="section-title">{pt ? 'Integridade do Protocolo' : 'Protocol Integrity'}</h2>
 
         <div class="bento">
             <!-- Airdrop Interactive Card -->
             <div class="bc bc-w4 airdrop-card">
-                <div class="bc-label">Community Reward</div>
-                <div class="bc-title">Follow & Claim $NEOFLW</div>
+                <div class="bc-label">{pt ? 'Recompensa da Comunidade' : 'Community Reward'}</div>
+                <div class="bc-title">{pt ? 'Siga e Resgate $NEOFLW' : 'Follow & Claim $NEOFLW'}</div>
                 <div class="airdrop-step">
                     <div class="step-num active">1</div>
-                    <span>Follow @NEOProtocol on X</span>
+                    <span>{pt ? 'Siga @NEOProtocol no X' : 'Follow @NEOProtocol on X'}</span>
                 </div>
                 <div class="airdrop-step">
                     <div class="step-num" id="step-2">2</div>
-                    <span>Connect Wallet to Verify</span>
+                    <span>{pt ? 'Conecte a Wallet para Verificar' : 'Connect Wallet to Verify'}</span>
                 </div>
                 <button class="airdrop-btn" id="claim-init" onclick="simulateFollow()">
-                    Connect & Follow
+                    {pt ? 'Conectar e Seguir' : 'Connect & Follow'}
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
                 </button>
                 <div id="claim-status" style="display:none;font-size:0.7rem;text-align:center;color:var(--green-soft);">
-                    Checking eligibility...
+                    {pt ? 'Verificando elegibilidade...' : 'Checking eligibility...'}
                 </div>
             </div>
 
             <div class="bc bc-w8 bc-verified">
                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
                     <div>
-                        <div class="bc-label">On-Chain Source</div>
-                        <div class="bc-title">Verified Smart Contract</div>
+                        <div class="bc-label">{pt ? 'Fonte On-Chain' : 'On-Chain Source'}</div>
+                        <div class="bc-title">{pt ? 'Contrato Inteligente Verificado' : 'Verified Smart Contract'}</div>
                     </div>
                     <div class="hc-badge">LOCKED</div>
                </div>
@@ -45,18 +50,18 @@
             </div>
 
             <div class="bc bc-w12" style="background:var(--glass);">
-                <div class="bc-label">Live Stats <span id="stats-status" style="font-size:0.6rem;color:var(--green);margin-left:0.5rem;opacity:0;">● live</span></div>
+                <div class="bc-label">{pt ? 'Estatísticas Ao Vivo' : 'Live Stats'} <span id="stats-status" style="font-size:0.6rem;color:var(--green);margin-left:0.5rem;opacity:0;">● {pt ? 'ao vivo' : 'live'}</span></div>
                 <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));gap:var(--fib4);margin-top:var(--fib3);">
                     <div>
-                        <div class="stat-cell-label">Token Price</div>
+                        <div class="stat-cell-label">{pt ? 'Preço do Token' : 'Token Price'}</div>
                         <div class="bc-number-huge" id="stat-price">—</div>
                     </div>
                     <div>
-                        <div class="stat-cell-label">24h Volume</div>
+                        <div class="stat-cell-label">{pt ? 'Volume 24h' : '24h Volume'}</div>
                         <div class="bc-number-huge" id="stat-volume">—</div>
                     </div>
                     <div>
-                        <div class="stat-cell-label">Market Cap</div>
+                        <div class="stat-cell-label">{pt ? 'Market Cap' : 'Market Cap'}</div>
                         <div class="bc-number-huge pink" id="stat-mcap">—</div>
                     </div>
                 </div>
@@ -65,24 +70,28 @@
     </div>
 </section>
 
-<script is:inline>
+<script define:vars={{ pt }} is:inline>
     function simulateFollow() {
         const btn = document.getElementById('claim-init');
         const status = document.getElementById('claim-status');
         const step2 = document.getElementById('step-2');
 
-        btn.innerHTML = '<span style="display:flex;align-items:center;gap:8px;"><div class="dot dot-g" style="animation:pulse 1s infinite"></div> Checking Follow...</span>';
+        btn.innerHTML = pt
+            ? '<span style="display:flex;align-items:center;gap:8px;"><div class="dot dot-g" style="animation:pulse 1s infinite"></div> Verificando follow...</span>'
+            : '<span style="display:flex;align-items:center;gap:8px;"><div class="dot dot-g" style="animation:pulse 1s infinite"></div> Checking Follow...</span>';
         status.style.display = 'block';
 
         setTimeout(() => {
             step2.classList.add('active');
-            btn.innerHTML = 'Connecting Wallet...';
-            status.innerHTML = 'Analyzing wallet history on Base...';
+            btn.innerHTML = pt ? 'Conectando Wallet...' : 'Connecting Wallet...';
+            status.innerHTML = pt ? 'Analisando histórico da wallet na Base...' : 'Analyzing wallet history on Base...';
 
             setTimeout(() => {
                 btn.style.background = 'var(--green)';
-                btn.innerHTML = 'Verified & Eligible';
-                status.innerHTML = '<span style="color:var(--green)">Success! You can claim 1,000 $NEOFLW</span>';
+                btn.innerHTML = pt ? 'Verificado e Elegível' : 'Verified & Eligible';
+                status.innerHTML = pt
+                    ? '<span style="color:var(--green)">Sucesso! Você pode resgatar 1.000 $NEOFLW</span>'
+                    : '<span style="color:var(--green)">Success! You can claim 1,000 $NEOFLW</span>';
             }, 1500);
         }, 1200);
     }

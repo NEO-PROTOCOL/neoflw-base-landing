@@ -1,9 +1,14 @@
 ---
+interface Props {
+    locale?: 'en' | 'pt-BR';
+}
+const { locale = 'en' } = Astro.props;
+const pt = locale === 'pt-BR';
 ---
 <section class="chart-section" id="chart">
     <div class="wrap">
-        <div class="section-eyebrow">02 — Market</div>
-        <div class="section-title">Live price chart</div>
+        <div class="section-eyebrow">{pt ? '02 - Mercado' : '02 - Market'}</div>
+        <div class="section-title">{pt ? 'Gráfico de preço ao vivo' : 'Live price chart'}</div>
         <div class="chart-wrap">
             <div class="chart-header">
                 <div class="chart-left">
@@ -15,7 +20,7 @@
                         <div class="chart-info-sub">Base Mainnet · GeckoTerminal</div>
                     </div>
                 </div>
-                <div class="chart-live">Live</div>
+                <div class="chart-live">{pt ? 'Ao vivo' : 'Live'}</div>
             </div>
             <div class="chart-embed">
                 <iframe height="100%" width="100%" id="geckoterminal-embed" title="Embed NEOFLW / ETH 0.3%" src="https://www.geckoterminal.com/base/pools/0xba6f7f1d429c61e1714bd94a1c74414289fe52f1c14473ba005edfd042d3f014?embed=1&info=0&swaps=0&grayscale=0&light_chart=0&chart_type=market_cap&resolution=5m" frameborder="0" allow="clipboard-write" allowfullscreen></iframe>
