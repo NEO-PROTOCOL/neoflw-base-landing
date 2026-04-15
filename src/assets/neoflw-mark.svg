@@ -1,0 +1,16 @@
+<svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bgGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(48 48) rotate(90) scale(48)">
+      <stop offset="0" stop-color="#1D66FF"/>
+      <stop offset="1" stop-color="#0A1B46"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="12" y1="12" x2="84" y2="84" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#67A3FF"/>
+      <stop offset="1" stop-color="#2A5FFF"/>
+    </linearGradient>
+  </defs>
+  <rect x="6" y="6" width="84" height="84" rx="20" fill="#060912"/>
+  <circle cx="48" cy="48" r="30" fill="url(#bgGlow)"/>
+  <circle cx="48" cy="48" r="33" stroke="url(#ring)" stroke-opacity="0.55" stroke-width="2"/>
+  <rect x="30" y="45" width="36" height="6" rx="3" fill="#E9F1FF" fill-opacity="0.92"/>
+</svg>

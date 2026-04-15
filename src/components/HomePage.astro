@@ -19,6 +19,7 @@ const layoutTitle = pt ? 'NEOFLW - Token NEØ FLOWOFF' : 'NEOFLW - NEØ FLOWOFF 
 const layoutDescription = pt
   ? 'NEOFLW é o token nativo do ecossistema NEØ FLOWOFF. ERC-20 na Base mainnet.'
   : 'NEOFLW is the native token of the NEØ FLOWOFF ecosystem. ERC-20 on Base mainnet.';
+const baseRpcUrl = (import.meta.env.PUBLIC_BASE_RPC_URL || 'https://mainnet.base.org').trim() || 'https://mainnet.base.org';
 const i18n = {
   connectWallet: pt ? 'Conectar Wallet' : 'Connect Wallet',
   chooseWallet: pt ? 'Escolha sua wallet' : 'Choose your wallet',
@@ -153,7 +154,7 @@ const i18n = {
           crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <!-- Main script -->
-  <script define:vars={{ i18n, numberLocale }} is:inline>
+  <script define:vars={{ i18n, numberLocale, baseRpcUrl }} is:inline>
     const CONTRACT_ADDRESS = "0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b";
     const SITE_URL = "neoflw.vercel.app";
 
@@ -195,7 +196,12 @@ const i18n = {
         "function publicMint() external payable",
         "function hasPublicMinted(address user) external view returns (bool)",
         "function totalSupply() external view returns (uint256)",
-        "function symbol() external view returns (string)"
+        "function symbol() external view returns (string)",
+        "function owner() external view returns (address)",
+        "function bridgeMinter() external view returns (address)",
+        "function publicMintEnabled() external view returns (bool)",
+        "function PROTOCOL_TREASURY() external view returns (address)",
+        "function PROTOCOL_FEE_BPS() external view returns (uint256)"
     ];
 
     // ── Wallet tracking (Turso) ──────────────────────────────────────
@@ -214,12 +220,159 @@ const i18n = {
         } catch (_) { /* silencioso — nunca bloqueia o fluxo */ }
     }
 
+    const LIVE_STATS_INTERVAL_MS = 60_000;
+    const FETCH_TIMEOUT_MS = 10_000;
+    const STALE_WINDOW_MS = LIVE_STATS_INTERVAL_MS * 2;
     let provider, signer, contract;
     let userAddress = null;
+    let listenersBound = false;
+    let liveStatsIntervalId = null;
+    let walletEventsBound = false;
+    let lastProofSyncTs = 0;
+
+    function setConnectButtonState(address) {
+        const connBtn = document.getElementById('connect-btn');
+        if (!connBtn) return;
+        connBtn.textContent = '';
+        if (!address) {
+            connBtn.classList.remove('active');
+            connBtn.append(document.createTextNode(i18n.connectWallet));
+            return;
+        }
+        const dot = document.createElement('span');
+        dot.className = 'dot';
+        dot.style.background = 'var(--green)';
+        const txt = document.createElement('span');
+        txt.className = 'addr-txt';
+        txt.textContent = `${address.slice(0,6)}...${address.slice(-4)}`;
+        connBtn.classList.add('active');
+        connBtn.append(dot, document.createTextNode(' '), txt);
+    }
+
+    function shortenAddress(address) {
+        if (!address || address === ethers.ZeroAddress) return '—';
+        return `${address.slice(0, 6)}...${address.slice(-4)}`;
+    }
+
+    function setChipState(el, stateText, variant = 'neutral') {
+        if (!el) return;
+        el.textContent = stateText;
+        el.classList.remove('is-on', 'is-off', 'is-warn');
+        if (variant === 'on') el.classList.add('is-on');
+        if (variant === 'off') el.classList.add('is-off');
+        if (variant === 'warn') el.classList.add('is-warn');
+    }
+
+    function updateProofTrustUI({ ownerAddr, mintEnabled, bridgeAddr, protocolFeeBps, treasuryAddr }) {
+        const ownerChip = document.getElementById('proof-owner-chip');
+        const mintChip = document.getElementById('proof-mint-chip');
+        const bridgeEl = document.getElementById('proof-bridge-minter');
+        const feeEl = document.getElementById('proof-fee-split');
+        const treasuryEl = document.getElementById('proof-treasury-address');
+
+        if (ownerChip) {
+            const ownerSet = ownerAddr && ownerAddr !== ethers.ZeroAddress;
+            setChipState(ownerChip, ownerSet ? (pt ? 'Owner ativo' : 'Owner active') : (pt ? 'Renounced' : 'Renounced'), ownerSet ? 'on' : 'warn');
+        }
+
+        if (mintChip) {
+            setChipState(
+                mintChip,
+                mintEnabled ? (pt ? 'Ativo' : 'Active') : (pt ? 'Pausado' : 'Paused'),
+                mintEnabled ? 'on' : 'off'
+            );
+        }
+
+        if (bridgeEl) {
+            const hasBridge = bridgeAddr && bridgeAddr !== ethers.ZeroAddress;
+            bridgeEl.textContent = `${pt ? 'Minter:' : 'Minter:'} ${hasBridge ? shortenAddress(bridgeAddr) : (pt ? 'não configurado' : 'not configured')}`;
+        }
+
+        if (feeEl && Number.isFinite(protocolFeeBps)) {
+            const protocolPct = Number(protocolFeeBps) / 100;
+            const ownerPct = 100 - protocolPct;
+            feeEl.textContent = `${protocolPct.toFixed(0)}% / ${ownerPct.toFixed(0)}%`;
+        }
+
+        if (treasuryEl) {
+            treasuryEl.textContent = `${pt ? 'Treasury:' : 'Treasury:'} ${shortenAddress(treasuryAddr)}`;
+        }
+    }
+
+    function updateProofRpcMeta(statusVariant, syncedAtMs = Date.now()) {
+        const rpcChip = document.getElementById('proof-rpc-chip');
+        const rpcSync = document.getElementById('proof-rpc-sync');
+        if (!rpcChip && !rpcSync) return;
+
+        const statusText = statusVariant === 'on'
+            ? (pt ? 'RPC Online' : 'RPC Online')
+            : statusVariant === 'warn'
+                ? (pt ? 'RPC Fallback' : 'RPC Fallback')
+                : (pt ? 'RPC Stale' : 'RPC Stale');
+
+        if (rpcChip) {
+            setChipState(rpcChip, statusText, statusVariant);
+        }
+
+        if (rpcSync) {
+            const formatted = new Date(syncedAtMs).toLocaleTimeString(numberLocale, { hour12: false });
+            rpcSync.textContent = pt ? `Última sync: ${formatted}` : `Last sync: ${formatted}`;
+        }
+    }
+
+    function markProofRpcStaleIfNeeded() {
+        if (!lastProofSyncTs) return;
+        if (Date.now() - lastProofSyncTs > STALE_WINDOW_MS) {
+            updateProofRpcMeta('off', lastProofSyncTs);
+        }
+    }
+
+    async function updateProofTrustSignals(readContract) {
+        const ownerChip = document.getElementById('proof-owner-chip');
+        const mintChip = document.getElementById('proof-mint-chip');
+        const rpcChip = document.getElementById('proof-rpc-chip');
+        if (!ownerChip && !mintChip && !rpcChip) return;
+
+        try {
+            const safeCall = async (fn, fallback) => {
+                try {
+                    return { value: await fn(), ok: true };
+                } catch (_) {
+                    return { value: fallback, ok: false };
+                }
+            };
+
+            const [ownerRes, mintRes, bridgeRes, feeRes, treasuryRes] = await Promise.all([
+                safeCall(() => readContract.owner(), ethers.ZeroAddress),
+                safeCall(() => readContract.publicMintEnabled(), true),
+                safeCall(() => readContract.bridgeMinter(), ethers.ZeroAddress),
+                safeCall(() => readContract.PROTOCOL_FEE_BPS(), 500n),
+                safeCall(() => readContract.PROTOCOL_TREASURY(), ethers.ZeroAddress)
+            ]);
+
+            updateProofTrustUI({
+                ownerAddr: ownerRes.value,
+                mintEnabled: mintRes.value,
+                bridgeAddr: bridgeRes.value,
+                protocolFeeBps: Number(feeRes.value),
+                treasuryAddr: treasuryRes.value
+            });
+
+            const hadFallback = [ownerRes, mintRes, bridgeRes, feeRes, treasuryRes].some((res) => !res.ok);
+            lastProofSyncTs = Date.now();
+            updateProofRpcMeta(hadFallback ? 'warn' : 'on', lastProofSyncTs);
+        } catch (err) {
+            console.warn('Proof trust signals unavailable:', err);
+            if (ownerChip) setChipState(ownerChip, pt ? 'Indisponível' : 'Unavailable', 'off');
+            if (mintChip) setChipState(mintChip, pt ? 'Indisponível' : 'Unavailable', 'off');
+            lastProofSyncTs = Date.now();
+            updateProofRpcMeta('off', lastProofSyncTs);
+        }
+    }
 
     async function init() {
         // Default provider for read-only data (Base RPC)
-        const baseRpc = "https://mainnet.base.org";
+        const baseRpc = baseRpcUrl;
         const readProvider = new ethers.JsonRpcProvider(baseRpc);
         const readContract = new ethers.Contract(CONTRACT_ADDRESS, ABI, readProvider);
 
@@ -231,6 +384,7 @@ const i18n = {
             // Fallback to static info if RPC fails
             // BaseScan fallback will populate supply-count via updateLiveStats()
         }
+        await updateProofTrustSignals(readContract);
 
         setupEventListeners();
         await tryAutoReconnect();
@@ -303,14 +457,13 @@ const i18n = {
                 // Atualiza visita no Turso (fire-and-forget)
                 trackWallet(userAddress);
 
-                const short = `${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
-                const connBtn = document.getElementById('connect-btn');
-                connBtn.innerHTML = `<span class="dot" style="background:var(--green)"></span> <span class="addr-txt">${short}</span>`;
-                connBtn.classList.add('active');
+                setConnectButtonState(userAddress);
                 const hasMinted = await contract.hasPublicMinted(userAddress);
                 const mintBtn = document.getElementById('action-mint-btn');
-                if (hasMinted) { mintBtn.disabled = true; mintBtn.textContent = i18n.alreadyMinted; }
-                else { mintBtn.textContent = i18n.mintNow; mintBtn.classList.add('connected'); }
+                if (mintBtn) {
+                    if (hasMinted) { mintBtn.disabled = true; mintBtn.textContent = i18n.alreadyMinted; }
+                    else { mintBtn.textContent = i18n.mintNow; mintBtn.classList.add('connected'); }
+                }
             } else {
                 localStorage.removeItem('neoflw_addr');
             }
@@ -327,15 +480,15 @@ const i18n = {
             contract = null;
             localStorage.removeItem('neoflw_addr');
 
-            const connBtn = document.getElementById('connect-btn');
-            connBtn.innerHTML = `${i18n.connectWallet}`;
-            connBtn.classList.remove('active');
+            setConnectButtonState(null);
 
             const mintBtn = document.getElementById('action-mint-btn');
-            mintBtn.textContent = i18n.connectWalletToMint;
-            mintBtn.classList.remove('connected');
-            mintBtn.disabled = false;
-            mintBtn.style.background = ""; // Reset success color if needed
+            if (mintBtn) {
+                mintBtn.textContent = i18n.connectWalletToMint;
+                mintBtn.classList.remove('connected');
+                mintBtn.disabled = false;
+                mintBtn.style.background = ""; // Reset success color if needed
+            }
 
             console.log("App state cleared.");
         } else {
@@ -366,10 +519,7 @@ const i18n = {
                 trackWallet(userAddress);
 
                 // Update Top Nav Button
-                const shortAddr = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
-                const connBtn = document.getElementById('connect-btn');
-                connBtn.innerHTML = `<span class="dot" style="background:var(--green)"></span> <span class="addr-txt">${shortAddr}</span>`;
-                connBtn.classList.add('active');
+                setConnectButtonState(userAddress);
 
                 // Check status for Mint
                 const hasMinted = await contract.hasPublicMinted(userAddress);
@@ -483,9 +633,24 @@ const i18n = {
         }
     }
 
+    async function fetchJsonWithTimeout(url, options = {}, timeoutMs = FETCH_TIMEOUT_MS) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+            const response = await fetch(url, { ...options, signal: controller.signal });
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return await response.json();
+        } finally {
+            clearTimeout(timeoutId);
+        }
+    }
+
     async function updateLiveStats() {
         const POOL = '0xba6f7f1d429c61e1714bd94a1c74414289fe52f1c14473ba005edfd042d3f014';
         const CONTRACT_ADDR = '0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B';
+        const statsBadge = document.getElementById('stats-status');
 
         function fmt(n) {
             if (n >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B';
@@ -494,12 +659,12 @@ const i18n = {
             return '$' + n.toFixed(2);
         }
 
+        let statsLoaded = false;
         try {
-            // GeckoTerminal API — free, no key required
-            const res = await fetch(`https://api.geckoterminal.com/api/v2/networks/base/pools/${POOL}`, {
+            // GeckoTerminal API — primary source
+            const json = await fetchJsonWithTimeout(`https://api.geckoterminal.com/api/v2/networks/base/pools/${POOL}`, {
                 headers: { 'Accept': 'application/json' }
             });
-            const json = await res.json();
             const attr = json.data.attributes;
 
             const price = parseFloat(attr.base_token_price_usd);
@@ -511,18 +676,52 @@ const i18n = {
                 : '$' + price.toFixed(4);
             document.getElementById('stat-volume').textContent = fmt(vol24);
             document.getElementById('stat-mcap').textContent = fmt(mcap);
-
-            const badge = document.getElementById('stats-status');
-            badge.style.opacity = '1';
+            statsLoaded = true;
         } catch (err) {
-            console.warn('Live stats fetch failed:', err);
+            console.warn('GeckoTerminal stats fetch failed:', err);
+        }
+
+        if (!statsLoaded) {
+            try {
+                // DexScreener API — fallback source
+                const dex = await fetchJsonWithTimeout(`https://api.dexscreener.com/latest/dex/pairs/base/${POOL}`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const pair = dex?.pairs?.[0];
+                if (pair) {
+                    const price = parseFloat(pair.priceUsd || 0);
+                    const vol24 = parseFloat(pair.volume?.h24 || 0);
+                    const mcap = parseFloat(pair.marketCap || pair.fdv || 0);
+                    document.getElementById('stat-price').textContent = price < 0.01
+                        ? '$' + price.toFixed(6)
+                        : '$' + price.toFixed(4);
+                    document.getElementById('stat-volume').textContent = fmt(vol24);
+                    document.getElementById('stat-mcap').textContent = fmt(mcap);
+                    statsLoaded = true;
+                }
+            } catch (err) {
+                console.warn('DexScreener stats fetch failed:', err);
+            }
+        }
+
+        if (statsBadge) {
+            statsBadge.style.opacity = '1';
+            if (statsLoaded) {
+                statsBadge.textContent = pt ? '● ao vivo' : '● live';
+                statsBadge.style.color = 'var(--green)';
+            } else {
+                statsBadge.textContent = pt ? '● indisponível' : '● unavailable';
+                statsBadge.style.color = 'var(--pink-soft)';
+                document.getElementById('stat-price').textContent = pt ? 'N/D' : 'N/A';
+                document.getElementById('stat-volume').textContent = pt ? 'N/D' : 'N/A';
+                document.getElementById('stat-mcap').textContent = pt ? 'N/D' : 'N/A';
+            }
         }
 
         try {
             // BaseScan — total supply for On-chain Distribution card
             const MAX_SUPPLY = 1_000_000_000;
-            const supplyRes = await fetch(`https://api.basescan.org/api?module=stats&action=tokensupply&contractaddress=${CONTRACT_ADDR}`);
-            const supplyData = await supplyRes.json();
+            const supplyData = await fetchJsonWithTimeout(`https://api.basescan.org/api?module=stats&action=tokensupply&contractaddress=${CONTRACT_ADDR}`);
             if (supplyData.status === '1') {
                 const supply = parseInt(supplyData.result) / 1e18;
                 const pct = Math.round((supply / MAX_SUPPLY) * 100);
@@ -541,20 +740,34 @@ const i18n = {
         } catch (err) {
             console.warn('Supply fetch failed:', err);
         }
+
+        try {
+            const readProvider = new ethers.JsonRpcProvider(baseRpcUrl);
+            const readContract = new ethers.Contract(CONTRACT_ADDRESS, ABI, readProvider);
+            await updateProofTrustSignals(readContract);
+        } catch (err) {
+            console.warn('Proof trust refresh failed:', err);
+            markProofRpcStaleIfNeeded();
+        }
     }
 
     function setupEventListeners() {
-        document.getElementById('connect-btn').addEventListener('click', toggleWallet);
-        document.getElementById('action-mint-btn').addEventListener('click', doMint);
+        if (!listenersBound) {
+            document.getElementById('connect-btn')?.addEventListener('click', toggleWallet);
+            document.getElementById('action-mint-btn')?.addEventListener('click', doMint);
+            listenersBound = true;
+        }
 
-        if (window.ethereum) {
+        if (window.ethereum && !walletEventsBound) {
             window.ethereum.on('chainChanged', () => window.location.reload());
             window.ethereum.on('accountsChanged', () => window.location.reload());
+            walletEventsBound = true;
         }
 
         // Sync On-Chain Data every 60s
         updateLiveStats();
-        setInterval(updateLiveStats, 60000);
+        if (liveStatsIntervalId) clearInterval(liveStatsIntervalId);
+        liveStatsIntervalId = setInterval(updateLiveStats, LIVE_STATS_INTERVAL_MS);
     }
 
     function copyAddr() {

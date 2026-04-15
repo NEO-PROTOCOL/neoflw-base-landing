@@ -34,19 +34,83 @@ const pt = locale === 'pt-BR';
             </div>
 
             <div class="bc bc-w8 bc-verified">
-               <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div class="proof-trust-header">
                     <div>
-                        <div class="bc-label">{pt ? 'Fonte On-Chain' : 'On-Chain Source'}</div>
-                        <div class="bc-title">{pt ? 'Contrato Inteligente Verificado' : 'Verified Smart Contract'}</div>
+                        <div class="bc-label">{pt ? 'Segurança Operacional' : 'Operational Security'}</div>
+                        <div class="bc-title">{pt ? 'Controles On-Chain Reais' : 'Real On-Chain Controls'}</div>
                     </div>
-                    <div class="hc-badge">LOCKED</div>
-               </div>
-               <div class="code-block" style="background:rgba(0,0,0,0.4);padding:1rem;border-radius:12px;border:1px solid var(--border);">
-                    <div class="code-line"><span class="c-cmt">// Ownership Renounced</span></div>
-                    <div class="code-line"><span class="c-key">address</span> <span class="c-val">owner</span> = <span class="c-str">0x0000...0000</span>;</div>
-                    <div class="code-line"><span class="c-cmt">// High Security Level</span></div>
-                    <div class="code-line"><span class="c-key">bool</span> <span class="c-val">isImmutable</span> = <span class="c-key">true</span>;</div>
-               </div>
+                    <div class="proof-trust-badge">{pt ? 'VERIFICÁVEL' : 'VERIFIABLE'}</div>
+                </div>
+
+                <div class="proof-trust-grid">
+                    <article class="proof-trust-item">
+                        <div class="proof-trust-item-label">{pt ? 'Governança' : 'Governance'}</div>
+                        <div class="proof-trust-item-value">
+                            <span id="proof-owner-model">{pt ? 'Ownable2Step' : 'Ownable2Step'}</span>
+                            <span id="proof-owner-chip" class="proof-live-chip" style="margin-left:0.45rem;">…</span>
+                        </div>
+                        <p class="proof-trust-item-body">
+                            {pt
+                                ? 'Administração explícita: funções críticas usam onlyOwner com transferência em duas etapas.'
+                                : 'Explicit admin model: critical functions use onlyOwner with two-step ownership transfer.'}
+                        </p>
+                    </article>
+
+                    <article class="proof-trust-item">
+                        <div class="proof-trust-item-label">{pt ? 'Mint Público' : 'Public Mint'}</div>
+                        <div class="proof-trust-item-value">
+                            <span>{pt ? '1 por Wallet' : '1 per Wallet'}</span>
+                            <span id="proof-mint-chip" class="proof-live-chip" style="margin-left:0.45rem;">…</span>
+                        </div>
+                        <p class="proof-trust-item-body">
+                            {pt
+                                ? 'Proteção anti-bot via hasPublicMinted + validação de preço e limite máximo de supply.'
+                                : 'Anti-bot guard via hasPublicMinted + price check and max supply enforcement.'}
+                        </p>
+                    </article>
+
+                    <article class="proof-trust-item">
+                        <div class="proof-trust-item-label">{pt ? 'Bridge Multichain' : 'Multichain Bridge'}</div>
+                        <div class="proof-trust-item-value">{pt ? 'Minter Dedicado' : 'Dedicated Minter'}</div>
+                        <p class="proof-trust-item-body">
+                            {pt
+                                ? 'bridgeMint restrito ao bridgeMinter configurado pelo owner, com bloqueio de mint para zero address.'
+                                : 'bridgeMint restricted to owner-configured bridgeMinter, with zero-address mint protection.'}
+                        </p>
+                        <div class="proof-trust-mono" id="proof-bridge-minter">—</div>
+                    </article>
+
+                    <article class="proof-trust-item">
+                        <div class="proof-trust-item-label">{pt ? 'Split de Receita' : 'Revenue Split'}</div>
+                        <div class="proof-trust-item-value" id="proof-fee-split">5% / 95%</div>
+                        <p class="proof-trust-item-body">
+                            {pt
+                                ? 'withdraw distribui automaticamente 5% para treasury do protocolo e 95% para owner.'
+                                : 'withdraw automatically routes 5% to protocol treasury and 95% to owner.'}
+                        </p>
+                        <div class="proof-trust-mono" id="proof-treasury-address">—</div>
+                    </article>
+                </div>
+
+                <div class="proof-trust-footer">
+                    <div class="proof-rpc-meta">
+                        <span id="proof-rpc-chip" class="proof-live-chip">…</span>
+                        <span id="proof-rpc-sync" class="proof-rpc-sync">
+                            {pt ? 'Última sync: --:--:--' : 'Last sync: --:--:--'}
+                        </span>
+                    </div>
+                    <a
+                        href="https://basescan.org/token/0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b#code"
+                        target="_blank"
+                        rel="noopener"
+                        class="proof-trust-link"
+                    >
+                        {pt ? 'Auditar no Basescan' : 'Audit on Basescan'}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px;">
+                            <path d="M7 17L17 7M17 7H7M17 7V17" />
+                        </svg>
+                    </a>
+                </div>
             </div>
 
             <div class="bc bc-w12" style="background:var(--glass);">

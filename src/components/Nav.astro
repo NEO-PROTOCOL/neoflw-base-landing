@@ -6,11 +6,12 @@ const { locale = 'en' } = Astro.props;
 const pt = locale === 'pt-BR';
 const mintPath = pt ? '/pt-br/mint' : '/mint';
 const switchPath = pt ? '/' : '/pt-br/';
+const homePath = pt ? '/pt-br/' : '/';
 ---
 <nav>
     <div class="nav-pill">
         <div class="nav-inner">
-            <a href="#" class="nav-logo"><span class="neo">NEØ</span> FlowOFF</a>
+            <a href={homePath} class="nav-logo"><span class="neo">NEØ</span> FlowOFF</a>
             <ul class="nav-links">
                 <li><a href="#tokenomics">{pt ? 'Tokenomics' : 'Tokenomics'}</a></li>
                 <li><a href="#features">{pt ? 'Recursos' : 'Features'}</a></li>

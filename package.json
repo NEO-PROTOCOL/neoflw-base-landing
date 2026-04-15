@@ -1,5 +1,5 @@
 {
-  "name": "neoflowoff-eth-limo",
+  "name": "neoflw-token-page",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "@lucide/astro": "^1.8.0",
-    "astro": "^5.18.1"
+    "astro": "^5.18.1",
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.8",

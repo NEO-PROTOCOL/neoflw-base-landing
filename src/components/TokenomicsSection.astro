@@ -1,10 +1,16 @@
 ---
+import { Image } from 'astro:assets';
+
 interface Props {
     locale?: 'en' | 'pt-BR';
 }
 const { locale = 'en' } = Astro.props;
 const pt = locale === 'pt-BR';
-const mintPath = pt ? '/pt-br/mint' : '/mint';
+const basePartnerLabel = pt ? 'Parceiro de Infraestrutura' : 'Infrastructure Partner';
+const basePartnerTitle = pt ? 'Suportado pela Base' : 'Powered by Base';
+const basePartnerBody = pt
+    ? 'Liquidação em Base Mainnet com infraestrutura L2 robusta para escalar com segurança.'
+    : 'Settlement on Base Mainnet with robust L2 infrastructure built for secure scaling.';
 ---
 <section class="bento-section" id="tokenomics">
     <div class="wrap">
@@ -34,12 +40,34 @@ const mintPath = pt ? '/pt-br/mint' : '/mint';
                         </div>
                     </div>
                     <div class="mint-actions">
-                        <a href={mintPath} class="mint-btn" id="action-mint-btn" style="text-decoration:none;display:flex;align-items:center;justify-content:center;">{pt ? 'Acesso Direto ao Mint' : 'Direct Mint Access'}</a>
+                        <button type="button" class="mint-btn" id="action-mint-btn" style="text-decoration:none;display:flex;align-items:center;justify-content:center;">
+                            {pt ? 'Mint Agora' : 'Mint Now'}
+                        </button>
                     </div>
                 </div>
 
-                <div class="base-powered">
-                    <img src="/Base_lockup_white.webp" alt="Powered by Base">
+                <div class="base-powered" aria-label={basePartnerTitle}>
+                    <div class="base-powered-copy">
+                        <span class="base-powered-kicker">{basePartnerLabel}</span>
+                        <span class="base-powered-title">{basePartnerTitle}</span>
+                        <span class="base-powered-body">{basePartnerBody}</span>
+                    </div>
+                    <a
+                        class="base-powered-logo-link"
+                        href="https://base.org"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={pt ? 'Abrir site da Base' : 'Open Base website'}
+                    >
+                        <Image
+                            class="base-powered-logo"
+                            src="/Base_lockup_white.webp"
+                            alt="Base"
+                            width="300"
+                            height="77"
+                            loading="lazy"
+                        />
+                    </a>
                 </div>
             </div>
 
@@ -58,7 +86,14 @@ const mintPath = pt ? '/pt-br/mint' : '/mint';
                 <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(0,82,255,0.15);display:flex;flex-direction:column;gap:0.75rem;">
                     <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue);font-weight:800;opacity:0.7;">{pt ? 'Parceiro Tecnológico Central' : 'Core Technology Partner'}</div>
                     <a href="https://nsfactory.xyz" target="_blank" rel="noopener" style="display:inline-block;transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);" onmouseover="this.style.transform='translateX(4px)'" onmouseout="this.style.transform='none'">
-                        <img src="/logo_name_horizontal_color.png" alt="NEØ SMART FACTORY" style="height:24px;display:block;">
+                        <Image
+                            src="/logo_name_horizontal_color.png"
+                            alt="NEØ SMART FACTORY"
+                            style="height:24px;display:block;"
+                            width="240"
+                            height="24"
+                            loading="lazy"
+                        />
                     </a>
                     <div style="font-size:0.7rem;color:var(--text-3);line-height:1.4;">{pt ? 'Desenvolvido pelo time NEØ SMART FACTORY para contratos inteligentes seguros e de nível institucional na Base.' : 'Developed by the NEØ SMART FACTORY team for secure, institutional-grade smart contracts on Base.'}</div>
                 </div>
@@ -66,7 +101,13 @@ const mintPath = pt ? '/pt-br/mint' : '/mint';
 
             <div class="bc bc-w3 bc-network">
                 <div class="network-ring">
-                    <img src="/large_Base_Symbol_Blue_ee3f3fb0a5.png" alt="Base Logo">
+                    <Image
+                        src="/large_Base_Symbol_Blue_ee3f3fb0a5.png"
+                        alt="Base Logo"
+                        width="96"
+                        height="96"
+                        loading="lazy"
+                    />
                 </div>
                 <div class="network-name">Base L2</div>
                 <div class="network-sub">Chain ID 8453</div>

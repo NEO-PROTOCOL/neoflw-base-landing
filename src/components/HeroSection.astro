@@ -1,4 +1,7 @@
 ---
+import { Image } from 'astro:assets';
+import neoflwMark from '../assets/neoflw-mark.svg';
+
 interface Props {
     locale?: 'en' | 'pt-BR';
 }
@@ -26,24 +29,18 @@ const mintPath = pt ? '/pt-br/mint' : '/mint';
                         </>
                     )}
                 </p>
-                <!-- ─── HERO ACTIONS (two disciplined rows) ─── -->
                 <div class="hero-actions anim-4">
-
-                    <!-- Row 1: primary CTAs — inline, flush to grid edge -->
                     <div class="hero-ctas">
                         <a href={mintPath} class="btn-fill" style="background:var(--pink);box-shadow:0 10px 30px var(--pink-glow);color:#fff;">
                             {pt ? 'Resgatar Airdrop' : 'Claim Airdrop'}
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:13px;height:13px;flex-shrink:0;"><path d="M12 2v20M5 12l7 7 7-7"/></svg>
                         </a>
-                        <a href="https://app.uniswap.org/swap?chain=base&inputCurrency=USDC&outputCurrency=0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b"
-                            class="btn-outline" target="_blank" rel="noopener">
+                        <a href="https://app.uniswap.org/swap?chain=base&inputCurrency=USDC&outputCurrency=0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b" class="btn-outline" target="_blank" rel="noopener">
                             {pt ? 'Comprar na Uniswap' : 'Buy on Uniswap'}
                         </a>
-                        <a href="https://basescan.org/token/0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b"
-                            class="btn-outline" target="_blank" rel="noopener">{pt ? 'Explorar' : 'Scan'}</a>
+                        <a href="https://basescan.org/token/0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b" class="btn-outline" target="_blank" rel="noopener">{pt ? 'Explorar' : 'Scan'}</a>
                     </div>
 
-                    <!-- Row 2: contract chip — always its own full row -->
                     <div class="hero-contract-row anim-5">
                         <div class="contract-chip">
                             <span class="chip-label">{pt ? 'Contrato' : 'Contract'}</span>
@@ -56,7 +53,6 @@ const mintPath = pt ? '/pt-br/mint' : '/mint';
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
 
@@ -69,9 +65,9 @@ const mintPath = pt ? '/pt-br/mint' : '/mint';
                     <div class="hero-card-main">
                         <div class="hc-top">
                             <div class="hc-token">
-                                <div class="hc-icon"><img
-                                        src="data:image/jpeg;base64,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"
-                                        alt="NEOFLW" /></div>
+                                <div class="hc-icon">
+                                    <Image src={neoflwMark} alt="NEOFLW" width={40} height={40} loading="lazy" />
+                                </div>
                                 <div>
                                     <div class="hc-name">NEOFLW</div>
                                     <div class="hc-ticker">NEØ FlowOFF</div>
@@ -104,13 +100,12 @@ const mintPath = pt ? '/pt-br/mint' : '/mint';
                             </div>
                         </div>
                         <div class="hc-bar">
-                                <div class="hc-bar-row"><span>{pt ? 'Circulante' : 'Circulating'}</span><span id="hc-circ-pct">—</span></div>
+                            <div class="hc-bar-row"><span>{pt ? 'Circulante' : 'Circulating'}</span><span id="hc-circ-pct">—</span></div>
                             <div class="hc-bar-track">
                                 <div class="hc-bar-fill" id="hc-bar-fill" style="width:0%"></div>
                             </div>
                         </div>
 
-                        <!-- Interactive Proof Widget -->
                         <div style="margin-top:1.5rem;padding:0.75rem;border-radius:12px;background:rgba(0,255,136,0.05);border:1px solid rgba(0,255,136,0.1);display:flex;align-items:center;gap:10px;">
                             <div style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);"></div>
                             <span style="font-size:0.65rem;font-family:var(--mono);color:var(--green);letter-spacing:0.05em;">{pt ? 'VALIDAÇÃO_SMART: OK' : 'SMART_VALIDATION: PASS'}</span>
