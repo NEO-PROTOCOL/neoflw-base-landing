@@ -1,0 +1,8 @@
+{
+  "vscode-edge-devtools.webhint": false,
+  "html.validate.scripts": false,
+  "files.associations": {
+    "*.tsx": "typescriptreact",
+    "*.jsx": "javascriptreact"
+  }
+}

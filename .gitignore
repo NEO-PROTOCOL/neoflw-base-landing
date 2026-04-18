@@ -7,3 +7,5 @@ dist/
 *.log
 .pnpm-store/
 .npmrc
+.agents/
+.claude/skills/

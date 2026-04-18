@@ -41,21 +41,23 @@ function NavConnectInner() {
           type="button"
           className="nav-wallet-btn active"
           onClick={() => setOpen((o) => !o)}
-          aria-expanded={open}
+          aria-expanded={open ? 'true' : 'false'}
+          aria-haspopup="menu"
         >
           <span className="dot" style={{ background: 'var(--green)' }} />
           <span className="addr-txt">{label}</span>
         </button>
         {open && (
-          <div className="nav-wallet-menu" role="menu">
-            <div className="nav-wallet-menu-head">
+          <div className="nav-wallet-menu" role="menu" aria-label="Wallet actions">
+            <div className="nav-wallet-menu-head" role="presentation">
               <span className="dot" style={{ background: 'var(--green)' }} />
               <span className="nav-wallet-menu-addr">{shortAddr(address)}</span>
             </div>
-            <button type="button" className="nav-wallet-menu-item" onClick={copyAddress}>
+            <button type="button" role="menuitem" className="nav-wallet-menu-item" onClick={copyAddress}>
               {copied ? '✓ Copied' : 'Copy address'}
             </button>
             <a
+              role="menuitem"
               className="nav-wallet-menu-item"
               href={`${BASESCAN_URL}/address/${address}`}
               target="_blank"
@@ -65,6 +67,7 @@ function NavConnectInner() {
             </a>
             <button
               type="button"
+              role="menuitem"
               className="nav-wallet-menu-item danger"
               onClick={() => {
                 disconnect();
@@ -90,17 +93,19 @@ function NavConnectInner() {
         className="nav-wallet-btn"
         onClick={() => setOpen((o) => !o)}
         disabled={isPending}
-        aria-expanded={open}
+        aria-expanded={open ? 'true' : 'false'}
+        aria-haspopup="menu"
       >
         <span className="dot" />
         <span className="addr-txt">{isPending ? 'Connecting…' : 'Connect Wallet'}</span>
       </button>
       {open && (
-        <div className="nav-wallet-menu" role="menu">
+        <div className="nav-wallet-menu" role="menu" aria-label="Choose a wallet">
           {visibleConnectors.map((c) => (
             <button
               key={c.uid}
               type="button"
+              role="menuitem"
               className="nav-wallet-menu-item"
               onClick={() => {
                 connect({ connector: c });
