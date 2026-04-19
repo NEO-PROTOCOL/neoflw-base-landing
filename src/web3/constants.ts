@@ -61,7 +61,7 @@ export const MAX_SUPPLY_TOKENS = 1_000_000_000;
  * Trailing slashes são removidas para evitar `//og-image.png` quando
  * concatenando paths a esta URL.
  */
-export const SITE_URL = env('PUBLIC_SITE_URL', 'https://neoflw.vercel.app').replace(/\/+$/, '');
+export const SITE_URL = env('PUBLIC_SITE_URL', 'https://neoflw.xyz').replace(/\/+$/, '');
 
 export const OG_IMAGE_URL = `${SITE_URL}/og-image.png`;
 

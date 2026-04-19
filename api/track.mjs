@@ -43,12 +43,15 @@ function cleanRateLimitBucket() {
 
 function getCorsHeaders(origin) {
   const allowed = new Set(
-    (process.env.TRACK_ALLOWED_ORIGINS ?? 'https://neoflw.vercel.app')
+    (
+      process.env.TRACK_ALLOWED_ORIGINS ??
+      'https://neoflw.xyz,https://www.neoflw.xyz,https://neoflw.vercel.app'
+    )
       .split(',')
       .map((item) => item.trim())
       .filter(Boolean),
   );
-  const safeOrigin = origin && allowed.has(origin) ? origin : 'https://neoflw.vercel.app';
+  const safeOrigin = origin && allowed.has(origin) ? origin : 'https://neoflw.xyz';
   return {
     'Access-Control-Allow-Origin': safeOrigin,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',

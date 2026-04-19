@@ -1,6 +1,6 @@
 # NEØ FlowOFF — Token Page
 
-> **neoflw.eth** · **neoflw.vercel.app**
+> **neoflw.xyz** · **neoflw.eth** · mirror: `neoflw.vercel.app`
 
 Onchain landing + gasless mint page for the **NEOFLW** token on Base Mainnet.
 Built as an Astro static site with React islands for wallet/mint interactions.
@@ -173,7 +173,7 @@ TL;DR — push to `main`, Vercel auto-deploys. ENS `neoflw.eth` resolves through
 
 ## 🔗 Links
 
-- 🌐 Website: <https://neoflw.vercel.app>
+- 🌐 Website: <https://neoflw.xyz> (mirror: <https://neoflw.vercel.app>)
 - 🐦 Twitter / X: <https://x.com/neoflow_on_chain>
 - 🔍 Basescan: <https://basescan.org/token/0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b>
 - 💱 Uniswap: <https://app.uniswap.org/swap?outputCurrency=0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b>
