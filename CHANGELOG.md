@@ -22,7 +22,8 @@ Format: Keep a Changelog (adapted)
 - `AGENTS.md` na raiz do repo (este arquivo + AGENTS.md).
 - `.vscode/settings.json` desligando webhint do Edge Tools
   para evitar falsos positivos em JSX.
-- Skills oficiais instaladas em `.agents/skills/`:
+- Skills oficiais instaladas em `.agents/skills/`
+  (fonte-de-verdade: [`skills-lock.json`](../skills-lock.json)):
   ```text
   ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   ┃ astro                          (astrolicious)
@@ -34,7 +35,6 @@ Format: Keep a Changelog (adapted)
   ┃ migrating-an-onchainkit-app    (base/skills)
   ┃ registering-agent-base-dev     (base/skills)
   ┃ skill-creator                  (base/skills)
-  ┃ find-skills                    (vercel-labs)
   ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   ```
 

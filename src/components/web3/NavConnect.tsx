@@ -25,15 +25,16 @@ function shortAddr(addr: string) {
 }
 
 // SSR-safe environment snapshot. Captura uma vez após mount.
+// Estado inicial neutro (mobile=false, injected=null) evita hydration mismatch:
+// a primeira render client idêntica à do server, e o useEffect comita o real.
 function useWalletEnv() {
   const [env, setEnv] = useState<{
     mobile: boolean;
     injected: InjectedFlavor | null;
-    ready: boolean;
-  }>({ mobile: false, injected: null, ready: false });
+  }>({ mobile: false, injected: null });
 
   useEffect(() => {
-    setEnv({ mobile: isMobile(), injected: detectInjectedFlavor(), ready: true });
+    setEnv({ mobile: isMobile(), injected: detectInjectedFlavor() });
   }, []);
 
   return env;
@@ -187,22 +188,26 @@ function NavConnectInner() {
       </button>
       {open && (
         <div className="nav-wallet-menu" role="menu" aria-label="Choose a wallet">
-          {options.map((opt) =>
-            opt.kind === 'connector' && opt.connector ? (
-              <button
-                key={opt.key}
-                type="button"
-                role="menuitem"
-                className="nav-wallet-menu-item"
-                onClick={() => {
-                  connect({ connector: opt.connector! });
-                  setOpen(false);
-                }}
-              >
-                <span className="nav-wallet-menu-label">{opt.label}</span>
-                {opt.hint && <span className="nav-wallet-menu-hint">{opt.hint}</span>}
-              </button>
-            ) : (
+          {options.map((opt) => {
+            if (opt.kind === 'connector' && opt.connector) {
+              const connector = opt.connector;
+              return (
+                <button
+                  key={opt.key}
+                  type="button"
+                  role="menuitem"
+                  className="nav-wallet-menu-item"
+                  onClick={() => {
+                    connect({ connector });
+                    setOpen(false);
+                  }}
+                >
+                  <span className="nav-wallet-menu-label">{opt.label}</span>
+                  {opt.hint && <span className="nav-wallet-menu-hint">{opt.hint}</span>}
+                </button>
+              );
+            }
+            return (
               <a
                 key={opt.key}
                 role="menuitem"
@@ -210,12 +215,13 @@ function NavConnectInner() {
                 href={opt.href}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => setOpen(false)}
               >
                 <span className="nav-wallet-menu-label">{opt.label} ↗</span>
                 {opt.hint && <span className="nav-wallet-menu-hint">{opt.hint}</span>}
               </a>
-            ),
-          )}
+            );
+          })}
         </div>
       )}
     </div>
