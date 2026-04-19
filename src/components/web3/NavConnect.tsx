@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAccount, useConnect, useDisconnect, useEnsName } from 'wagmi';
 import type { Connector } from 'wagmi';
 import Web3Providers from './Web3Providers';
@@ -8,91 +8,50 @@ import {
   detectInjectedFlavor,
   isMobile,
   mobileDeeplinks,
-  type InjectedFlavor,
 } from '../../web3/walletEnv';
-
-type WalletOption = {
-  key: string;
-  label: string;
-  hint?: string;
-  kind: 'connector' | 'deeplink';
-  connector?: Connector;
-  href?: string;
-};
 
 function shortAddr(addr: string) {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 }
 
-// SSR-safe environment snapshot. Captura uma vez após mount.
-// Estado inicial neutro (mobile=false, injected=null) evita hydration mismatch:
-// a primeira render client idêntica à do server, e o useEffect comita o real.
-function useWalletEnv() {
-  const [env, setEnv] = useState<{
-    mobile: boolean;
-    injected: InjectedFlavor | null;
-  }>({ mobile: false, injected: null });
+/**
+ * Auto-pick policy (issue: simplificar UX do nav).
+ *
+ * Em vez de mostrar dropdown com 3+ wallets, escolhemos uma sozinha:
+ *
+ *   1. EIP-6963 announced → primeira da lista (browser ordena por preferência
+ *      do usuário; Wagmi preserva essa ordem). Cobre MetaMask, Rabby, etc.
+ *   2. Injected-generic com flavor detectado → fallback para wallets que ainda
+ *      não anunciam EIP-6963.
+ *   3. Coinbase Smart Wallet → onboarding default (passkey, no install). É o
+ *      caminho oficial para Base Mainnet, então faz sentido como rota padrão
+ *      de quem chega sem nenhuma extensão.
+ *
+ * Se o usuário já tem extensão e quer escolher OUTRA, ele troca pela própria
+ * UI da extensão (popup do MetaMask permite ver outras contas/redes). Não
+ * precisamos duplicar wallet picker no app — isso só adiciona um clique e
+ * paralisia de decisão no funil de mint.
+ *
+ * Pure: depende somente dos parâmetros (sem leitura de `window`). A detecção
+ * de injected-flavor é feita pelo caller e passada como `hasInjectedProvider`,
+ * o que mantém esta função trivialmente testável sem mock de DOM.
+ */
+function pickConnector(
+  connectors: readonly Connector[],
+  hasInjectedProvider: boolean,
+): Connector | null {
+  const eip6963 = connectors.find((c) => classifyConnector(c) === 'eip6963');
+  if (eip6963) return eip6963;
 
-  useEffect(() => {
-    setEnv({ mobile: isMobile(), injected: detectInjectedFlavor() });
-  }, []);
+  if (hasInjectedProvider) {
+    const injected = connectors.find((c) => classifyConnector(c) === 'injected-generic');
+    if (injected) return injected;
+  }
 
-  return env;
-}
-
-function buildOptions(connectors: readonly Connector[], env: ReturnType<typeof useWalletEnv>): WalletOption[] {
   const cb = connectors.find((c) => classifyConnector(c) === 'coinbase-smart-wallet');
-  const eip6963 = connectors.filter((c) => classifyConnector(c) === 'eip6963');
-  const injectedGeneric = connectors.find((c) => classifyConnector(c) === 'injected-generic');
+  if (cb) return cb;
 
-  const opts: WalletOption[] = [];
-
-  if (cb) {
-    opts.push({
-      key: cb.uid,
-      label: 'Coinbase Smart Wallet',
-      hint: 'no install · passkey',
-      kind: 'connector',
-      connector: cb,
-    });
-  }
-
-  // Providers anunciados via EIP-6963 (MetaMask, Rabby, Phantom, …)
-  // têm nome real; deduplicamos por id evitando colisão com o injected genérico.
-  for (const c of eip6963) {
-    opts.push({ key: c.uid, label: c.name, kind: 'connector', connector: c });
-  }
-
-  // Fallback genérico: só aparece se há provider injetado real
-  // E nenhum connector EIP-6963 já cobriu a wallet.
-  if (eip6963.length === 0 && injectedGeneric && env.injected) {
-    opts.push({
-      key: injectedGeneric.uid,
-      label: env.injected.name,
-      kind: 'connector',
-      connector: injectedGeneric,
-    });
-  }
-
-  // Mobile sem nenhuma wallet detectada → oferecer deep links de install/abrir.
-  if (env.mobile && eip6963.length === 0 && !env.injected) {
-    opts.push({
-      key: 'dl-coinbase',
-      label: 'Open in Coinbase Wallet',
-      hint: 'mobile app',
-      kind: 'deeplink',
-      href: mobileDeeplinks.coinbase(),
-    });
-    opts.push({
-      key: 'dl-metamask',
-      label: 'Open in MetaMask',
-      hint: 'mobile app',
-      kind: 'deeplink',
-      href: mobileDeeplinks.metamask(),
-    });
-  }
-
-  return opts;
+  return null;
 }
 
 function NavConnectInner() {
@@ -103,7 +62,6 @@ function NavConnectInner() {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const env = useWalletEnv();
 
   useEffect(() => {
     function onClick(e: MouseEvent) {
@@ -122,7 +80,19 @@ function NavConnectInner() {
     } catch {}
   }
 
-  const options = useMemo(() => buildOptions(connectors, env), [connectors, env]);
+  function handleConnect() {
+    const picked = pickConnector(connectors, detectInjectedFlavor() !== null);
+    if (picked) {
+      connect({ connector: picked });
+      return;
+    }
+    // Mobile sem injected e sem Coinbase connector → empurra para o app oficial.
+    // (No desktop esse galho não é alcançado: Coinbase Smart Wallet sempre existe
+    // como connector configurado em wagmi.config.)
+    if (isMobile()) {
+      window.open(mobileDeeplinks.coinbase(), '_blank', 'noopener,noreferrer');
+    }
+  }
 
   if (isConnected && address) {
     const label = ensName ?? shortAddr(address);
@@ -131,7 +101,7 @@ function NavConnectInner() {
         <button
           type="button"
           className="nav-wallet-btn active"
-          onClick={() => setOpen((o) => !o)}
+          onClick={() => setOpen((o: boolean) => !o)}
           aria-expanded={open ? 'true' : 'false'}
           aria-haspopup="menu"
         >
@@ -178,52 +148,12 @@ function NavConnectInner() {
       <button
         type="button"
         className="nav-wallet-btn"
-        onClick={() => setOpen((o) => !o)}
+        onClick={handleConnect}
         disabled={isPending}
-        aria-expanded={open ? 'true' : 'false'}
-        aria-haspopup="menu"
       >
         <span className="dot" />
         <span className="addr-txt">{isPending ? 'Connecting…' : 'Connect Wallet'}</span>
       </button>
-      {open && (
-        <div className="nav-wallet-menu" role="menu" aria-label="Choose a wallet">
-          {options.map((opt) => {
-            if (opt.kind === 'connector' && opt.connector) {
-              const connector = opt.connector;
-              return (
-                <button
-                  key={opt.key}
-                  type="button"
-                  role="menuitem"
-                  className="nav-wallet-menu-item"
-                  onClick={() => {
-                    connect({ connector });
-                    setOpen(false);
-                  }}
-                >
-                  <span className="nav-wallet-menu-label">{opt.label}</span>
-                  {opt.hint && <span className="nav-wallet-menu-hint">{opt.hint}</span>}
-                </button>
-              );
-            }
-            return (
-              <a
-                key={opt.key}
-                role="menuitem"
-                className="nav-wallet-menu-item"
-                href={opt.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setOpen(false)}
-              >
-                <span className="nav-wallet-menu-label">{opt.label} ↗</span>
-                {opt.hint && <span className="nav-wallet-menu-hint">{opt.hint}</span>}
-              </a>
-            );
-          })}
-        </div>
-      )}
     </div>
   );
 }
