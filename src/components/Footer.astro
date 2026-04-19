@@ -46,7 +46,28 @@ const pt = locale === 'pt-BR';
                     GeckoTerminal</a>
             </div>
 
-            <div class="footer-note" style="margin-top: 4rem; text-align: center; color: var(--text-3); font-size: 0.7rem; border-top: 1px solid var(--border); padding-top: 2rem;">
+            <div class="footer-sot" aria-label={pt ? 'Código-fonte e manifestos' : 'Source code and manifests'}>
+                <div class="footer-sot-label">
+                    <span class="footer-sot-dot" aria-hidden="true"></span>
+                    {pt ? 'Source-of-truth · código verificável' : 'Source-of-truth · verifiable code'}
+                </div>
+                <div class="footer-sot-row">
+                    <a class="footer-sot-chip" href={SOURCE_REPOS.tokenContract} target="_blank" rel="noopener">
+                        <span class="footer-sot-key">contract</span>
+                        <span class="footer-sot-val">NEO-FlowOFF/neoflw-token</span>
+                    </a>
+                    <a class="footer-sot-chip" href={SOURCE_REPOS.tokenPage} target="_blank" rel="noopener">
+                        <span class="footer-sot-key">page</span>
+                        <span class="footer-sot-val">NEO-PROTOCOL/neoflw-token-page</span>
+                    </a>
+                    <a class="footer-sot-chip" href={SOURCE_REPOS.orchestrator} target="_blank" rel="noopener">
+                        <span class="footer-sot-key">orchestrator</span>
+                        <span class="footer-sot-val">NEO-PROTOCOL/neobot-orchestrator</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-note" style="margin-top: 2.5rem; text-align: center; color: var(--text-3); font-size: 0.7rem; border-top: 1px solid var(--border); padding-top: 2rem;">
                 <div style="font-weight: 900; font-size: 1rem; letter-spacing: -0.02em; margin-bottom: 0.5rem;"><span style="color: var(--pink);">NEØ</span>FLW</div>
                 <div style="margin-bottom: 0.25rem;">neoflowoff.eth · neoflowoff.agency · NEØ Flowoff Marketing e Assessoria Digital LTDA</div>
                 <div>&copy; 2026 NEØ Protocol. {pt ? 'Todos os direitos reservados.' : 'All rights reserved.'}</div>
@@ -55,3 +76,86 @@ const pt = locale === 'pt-BR';
         </div>
     </div>
 </footer>
+
+<style>
+    .footer-sot {
+        margin-top: 3rem;
+        padding-top: 1.75rem;
+        border-top: 1px dashed rgba(255, 255, 255, 0.08);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.85rem;
+    }
+
+    .footer-sot-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: var(--mono);
+        font-size: 0.62rem;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: rgba(255, 255, 255, 0.45);
+    }
+
+    .footer-sot-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--pink);
+        box-shadow: 0 0 10px var(--pink-glow);
+    }
+
+    .footer-sot-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .footer-sot-chip {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 0.5rem;
+        padding: 0.4rem 0.75rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        color: var(--text-2);
+        text-decoration: none;
+        transition: border-color 0.18s, background 0.18s, color 0.18s;
+    }
+
+    .footer-sot-chip:hover {
+        border-color: rgba(255, 0, 128, 0.4);
+        background: rgba(255, 0, 128, 0.06);
+        color: #fff;
+    }
+
+    .footer-sot-key {
+        color: var(--pink-soft);
+        font-weight: 600;
+        text-transform: lowercase;
+        letter-spacing: 0.04em;
+    }
+
+    .footer-sot-key::after {
+        content: ' /';
+        color: rgba(255, 255, 255, 0.25);
+        font-weight: 400;
+    }
+
+    .footer-sot-val {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    @media (max-width: 600px) {
+        .footer-sot-chip {
+            font-size: 0.65rem;
+            padding: 0.35rem 0.65rem;
+        }
+    }
+</style>
