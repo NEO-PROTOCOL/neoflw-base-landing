@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import neoflwMark from '../assets/neoflw.png';
+import { GECKOTERMINAL_POOL_EMBED_URL } from '../web3/constants';
 
 interface Props {
     locale?: 'en' | 'pt-BR';
@@ -43,7 +44,7 @@ const pt = locale === 'pt-BR';
                         width="100%"
                         id="geckoterminal-embed"
                         title="Embed $NEOFLW / ETH 0.3%"
-                        src="https://www.geckoterminal.com/base/pools/0xba6f7f1d429c61e1714bd94a1c74414289fe52f1c14473ba005edfd042d3f014?embed=1&info=0&swaps=0&grayscale=0&light_chart=0&chart_type=market_cap&resolution=5m"
+                        src={GECKOTERMINAL_POOL_EMBED_URL}
                         loading="lazy"
                         allow="clipboard-write"
                         allowfullscreen

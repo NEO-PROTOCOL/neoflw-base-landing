@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import { BASESCAN_TOKEN_URL } from '../web3/constants';
 
 interface Props {
     locale?: 'en' | 'pt-BR';
@@ -79,7 +80,7 @@ const basePartnerBody = pt
                 <div class="bc-title" style="color:var(--blue);">{pt ? 'Verificado<br>on-chain' : 'On-chain<br>Verified'}</div>
                 <div style="font-size:0.78rem;color:var(--text-2);margin-top:0.5rem;line-height:1.6;">Source code
                     {pt ? 'publicamente verificável na Basescan. Zero proxies escondendo lógica.' : 'publicly verifiable on Basescan. Zero proxies hiding logic.'}</div>
-                <a href="https://basescan.org/token/0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b" target="_blank"
+                <a href={BASESCAN_TOKEN_URL} target="_blank"
                     rel="noopener"
                     style="display:inline-block;margin-top:1.25rem;padding:0.5rem 1rem;border-radius:999px;background:var(--blue-dim);border:1px solid rgba(0,82,255,0.25);color:var(--blue);font-size:0.75rem;font-weight:600;text-decoration:none;">{pt ? 'Ver Contrato' : 'View Contract'} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:10px;height:10px;margin-bottom:-1px;"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
 

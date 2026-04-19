@@ -1,4 +1,6 @@
 ---
+import { BASESCAN_TOKEN_CODE_URL } from '../web3/constants';
+
 interface Props {
     locale?: 'en' | 'pt-BR';
 }
@@ -100,7 +102,7 @@ const pt = locale === 'pt-BR';
                         </span>
                     </div>
                     <a
-                        href="https://basescan.org/token/0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b#code"
+                        href={BASESCAN_TOKEN_CODE_URL}
                         target="_blank"
                         rel="noopener"
                         class="proof-trust-link"

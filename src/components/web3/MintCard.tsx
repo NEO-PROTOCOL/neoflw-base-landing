@@ -14,11 +14,17 @@ import {
 } from '@coinbase/onchainkit/transaction';
 import { ConnectWallet, Wallet } from '@coinbase/onchainkit/wallet';
 import Web3Providers from './Web3Providers';
-import { BASE_CHAIN_ID, BASESCAN_URL, NEOFLW_ABI, NEOFLW_ADDRESS } from '../../web3/abi';
+import {
+  BASE_CHAIN_ID,
+  BASESCAN_URL,
+  MAX_SUPPLY_TOKENS,
+  NEOFLW_ABI,
+  NEOFLW_ADDRESS,
+} from '../../web3/constants';
 
 type Call = { to: Hex; data?: Hex; value?: bigint };
 
-const MAX_SUPPLY = 1_000_000_000n;
+const MAX_SUPPLY = BigInt(MAX_SUPPLY_TOKENS);
 
 type Props = {
   pt?: boolean;

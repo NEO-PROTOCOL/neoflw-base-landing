@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import frameContrato from '../assets/frame-contrato.png';
+import { BASESCAN_TOKEN_URL } from '../web3/constants';
 
 interface Props {
     locale?: 'en' | 'pt-BR';
@@ -82,7 +83,7 @@ const pt = locale === 'pt-BR';
                     quality={88} loading="eager" class="contract-modal-img" />
             </div>
             <footer class="contract-modal-foot">
-                <a href="https://basescan.org/token/0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b"
+                <a href={BASESCAN_TOKEN_URL}
                     target="_blank" rel="noopener" class="contract-modal-link">
                     {pt ? 'Abrir na Basescan ↗' : 'Open on Basescan ↗'}
                 </a>

@@ -8,6 +8,14 @@ import TokenomicsSection from './TokenomicsSection.astro';
 import ChartSection from './ChartSection.astro';
 import VerifySection from './VerifySection.astro';
 import Footer from './Footer.astro';
+import {
+  BASESCAN_TOKENSUPPLY_API_URL,
+  DEXSCREENER_PAIR_API_URL,
+  GECKOTERMINAL_POOL_API_URL,
+  MAX_SUPPLY_TOKENS,
+  NEOFLW_ADDRESS,
+  SITE_URL,
+} from '../web3/constants';
 
 interface Props {
   locale?: 'en' | 'pt-BR';
@@ -20,6 +28,16 @@ const layoutDescription = pt
   ? 'NEOFLW é o token nativo do ecossistema NEØ FLOWOFF. ERC-20 na Base mainnet.'
   : 'NEOFLW is the native token of the NEØ FLOWOFF ecosystem. ERC-20 on Base mainnet.';
 const baseRpcUrl = (import.meta.env.PUBLIC_BASE_RPC_URL || 'https://mainnet.base.org').trim() || 'https://mainnet.base.org';
+// Origin sem protocolo — formato esperado por deep links de wallets mobile (MetaMask /dapp/, etc).
+const siteHost = SITE_URL.replace(/^https?:\/\//, '').replace(/\/$/, '');
+const onchain = {
+  contract: NEOFLW_ADDRESS,
+  contractLc: NEOFLW_ADDRESS.toLowerCase(),
+  maxSupply: MAX_SUPPLY_TOKENS,
+  geckoApi: GECKOTERMINAL_POOL_API_URL,
+  dexscreenerApi: DEXSCREENER_PAIR_API_URL,
+  basescanSupplyApi: BASESCAN_TOKENSUPPLY_API_URL,
+};
 const i18n = {
   connectWallet: pt ? 'Conectar Wallet' : 'Connect Wallet',
   chooseWallet: pt ? 'Escolha sua wallet' : 'Choose your wallet',
@@ -155,9 +173,9 @@ const i18n = {
           crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <!-- Main script -->
-  <script define:vars={{ i18n, numberLocale, baseRpcUrl, pt }} is:inline>
-    const CONTRACT_ADDRESS = "0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b";
-    const SITE_URL = "neoflw.vercel.app";
+  <script define:vars={{ i18n, numberLocale, baseRpcUrl, pt, siteHost, onchain }} is:inline>
+    const CONTRACT_ADDRESS = onchain.contractLc;
+    const SITE_URL = siteHost;
 
     // ── Mobile wallet helpers ────────────────────────────────
     function isMobile() {
@@ -651,8 +669,6 @@ const i18n = {
     }
 
     async function updateLiveStats() {
-        const POOL = '0xba6f7f1d429c61e1714bd94a1c74414289fe52f1c14473ba005edfd042d3f014';
-        const CONTRACT_ADDR = '0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B';
         const statsBadge = document.getElementById('stats-status');
 
         function fmt(n) {
@@ -665,7 +681,7 @@ const i18n = {
         let statsLoaded = false;
         try {
             // GeckoTerminal API — primary source
-            const json = await fetchJsonWithTimeout(`https://api.geckoterminal.com/api/v2/networks/base/pools/${POOL}`, {
+            const json = await fetchJsonWithTimeout(onchain.geckoApi, {
                 headers: { 'Accept': 'application/json' }
             });
             const attr = json.data.attributes;
@@ -687,7 +703,7 @@ const i18n = {
         if (!statsLoaded) {
             try {
                 // DexScreener API — fallback source
-                const dex = await fetchJsonWithTimeout(`https://api.dexscreener.com/latest/dex/pairs/base/${POOL}`, {
+                const dex = await fetchJsonWithTimeout(onchain.dexscreenerApi, {
                     headers: { 'Accept': 'application/json' }
                 });
                 const pair = dex?.pairs?.[0];
@@ -723,11 +739,10 @@ const i18n = {
 
         try {
             // BaseScan — total supply for On-chain Distribution card
-            const MAX_SUPPLY = 1_000_000_000;
-            const supplyData = await fetchJsonWithTimeout(`https://api.basescan.org/api?module=stats&action=tokensupply&contractaddress=${CONTRACT_ADDR}`);
+            const supplyData = await fetchJsonWithTimeout(onchain.basescanSupplyApi);
             if (supplyData.status === '1') {
                 const supply = parseInt(supplyData.result) / 1e18;
-                const pct = Math.round((supply / MAX_SUPPLY) * 100);
+                const pct = Math.round((supply / onchain.maxSupply) * 100);
 
                 const el = document.getElementById('supply-count');
                 if (el) el.textContent = supply.toLocaleString(numberLocale);
