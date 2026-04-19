@@ -32,6 +32,55 @@ export const NEOFLW_ABI = [
     inputs: [{ name: '', type: 'address' }],
     outputs: [{ type: 'bool' }],
   },
+  {
+    type: 'function',
+    name: 'totalSupply',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'uint256' }],
+  },
+  {
+    type: 'function',
+    name: 'symbol',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'string' }],
+  },
+  {
+    type: 'function',
+    name: 'owner',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'address' }],
+  },
+  {
+    type: 'function',
+    name: 'bridgeMinter',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'address' }],
+  },
+  {
+    type: 'function',
+    name: 'publicMintEnabled',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'bool' }],
+  },
+  {
+    type: 'function',
+    name: 'PROTOCOL_TREASURY',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'address' }],
+  },
+  {
+    type: 'function',
+    name: 'PROTOCOL_FEE_BPS',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'uint256' }],
+  },
 ] as const;
 
 export const BASE_CHAIN_ID = 8453;
