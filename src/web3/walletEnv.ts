@@ -131,13 +131,15 @@ function currentUrlSafe(): string {
 /**
  * Sanitiza URL para uso em deep links cujo formato oficial espera
  * o host/path cru (MetaMask `/dapp/`, Rainbow). `encodeURIComponent`
- * no path quebraria esses providers. Remove apenas caracteres que
- * jamais fazem parte de um host/path válido.
+ * no path quebraria esses providers, então fazemos uma sanitização
+ * **conservadora**: removemos caracteres de controle, whitespace,
+ * aspas e angle-brackets — alguns deles (ex: aspa simples) são
+ * RFC 3986-válidos como sub-delim, mas removidos por defesa em
+ * profundidade contra parsers inconsistentes em wallets nativas.
+ * Preserva `/`, `?`, `#`, `&` porque providers aceitam path+query.
  */
 function safeDappPath(targetUrl: string): string {
   const stripped = targetUrl.replace(/^https?:\/\//, '');
-  // Remove caracteres de controle, espaços, aspas — preserva `/`, `?`, `#`, `&`
-  // porque providers aceitam path + query completos.
   return stripped.replace(/[\s"'<>\\^`{|}]+/g, '');
 }
 

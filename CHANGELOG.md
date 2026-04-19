@@ -23,7 +23,7 @@ Format: Keep a Changelog (adapted)
 - `.vscode/settings.json` desligando webhint do Edge Tools
   para evitar falsos positivos em JSX.
 - Skills oficiais instaladas em `.agents/skills/`
-  (fonte-de-verdade: [`skills-lock.json`](../skills-lock.json)):
+  (fonte-de-verdade: [`skills-lock.json`](./skills-lock.json)):
   ```text
   ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   ┃ astro                          (astrolicious)
