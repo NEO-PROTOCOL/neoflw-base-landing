@@ -1,10 +1,97 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAccount, useConnect, useDisconnect, useEnsName } from 'wagmi';
+import type { Connector } from 'wagmi';
 import Web3Providers from './Web3Providers';
 import { BASESCAN_URL } from '../../web3/abi';
+import {
+  classifyConnector,
+  detectInjectedFlavor,
+  isMobile,
+  mobileDeeplinks,
+  type InjectedFlavor,
+} from '../../web3/walletEnv';
+
+type WalletOption = {
+  key: string;
+  label: string;
+  hint?: string;
+  kind: 'connector' | 'deeplink';
+  connector?: Connector;
+  href?: string;
+};
 
 function shortAddr(addr: string) {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+}
+
+// SSR-safe environment snapshot. Captura uma vez após mount.
+function useWalletEnv() {
+  const [env, setEnv] = useState<{
+    mobile: boolean;
+    injected: InjectedFlavor | null;
+    ready: boolean;
+  }>({ mobile: false, injected: null, ready: false });
+
+  useEffect(() => {
+    setEnv({ mobile: isMobile(), injected: detectInjectedFlavor(), ready: true });
+  }, []);
+
+  return env;
+}
+
+function buildOptions(connectors: readonly Connector[], env: ReturnType<typeof useWalletEnv>): WalletOption[] {
+  const cb = connectors.find((c) => classifyConnector(c) === 'coinbase-smart-wallet');
+  const eip6963 = connectors.filter((c) => classifyConnector(c) === 'eip6963');
+  const injectedGeneric = connectors.find((c) => classifyConnector(c) === 'injected-generic');
+
+  const opts: WalletOption[] = [];
+
+  if (cb) {
+    opts.push({
+      key: cb.uid,
+      label: 'Coinbase Smart Wallet',
+      hint: 'no install · passkey',
+      kind: 'connector',
+      connector: cb,
+    });
+  }
+
+  // Providers anunciados via EIP-6963 (MetaMask, Rabby, Phantom, …)
+  // têm nome real; deduplicamos por id evitando colisão com o injected genérico.
+  for (const c of eip6963) {
+    opts.push({ key: c.uid, label: c.name, kind: 'connector', connector: c });
+  }
+
+  // Fallback genérico: só aparece se há provider injetado real
+  // E nenhum connector EIP-6963 já cobriu a wallet.
+  if (eip6963.length === 0 && injectedGeneric && env.injected) {
+    opts.push({
+      key: injectedGeneric.uid,
+      label: env.injected.name,
+      kind: 'connector',
+      connector: injectedGeneric,
+    });
+  }
+
+  // Mobile sem nenhuma wallet detectada → oferecer deep links de install/abrir.
+  if (env.mobile && eip6963.length === 0 && !env.injected) {
+    opts.push({
+      key: 'dl-coinbase',
+      label: 'Open in Coinbase Wallet',
+      hint: 'mobile app',
+      kind: 'deeplink',
+      href: mobileDeeplinks.coinbase(),
+    });
+    opts.push({
+      key: 'dl-metamask',
+      label: 'Open in MetaMask',
+      hint: 'mobile app',
+      kind: 'deeplink',
+      href: mobileDeeplinks.metamask(),
+    });
+  }
+
+  return opts;
 }
 
 function NavConnectInner() {
@@ -15,6 +102,7 @@ function NavConnectInner() {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const env = useWalletEnv();
 
   useEffect(() => {
     function onClick(e: MouseEvent) {
@@ -32,6 +120,8 @@ function NavConnectInner() {
       setTimeout(() => setCopied(false), 1500);
     } catch {}
   }
+
+  const options = useMemo(() => buildOptions(connectors, env), [connectors, env]);
 
   if (isConnected && address) {
     const label = ensName ?? shortAddr(address);
@@ -82,10 +172,6 @@ function NavConnectInner() {
     );
   }
 
-  const visibleConnectors = connectors.filter(
-    (c, i, arr) => arr.findIndex((x) => x.name === c.name) === i,
-  );
-
   return (
     <div className="nav-wallet-wrapper" ref={wrapperRef}>
       <button
@@ -101,20 +187,35 @@ function NavConnectInner() {
       </button>
       {open && (
         <div className="nav-wallet-menu" role="menu" aria-label="Choose a wallet">
-          {visibleConnectors.map((c) => (
-            <button
-              key={c.uid}
-              type="button"
-              role="menuitem"
-              className="nav-wallet-menu-item"
-              onClick={() => {
-                connect({ connector: c });
-                setOpen(false);
-              }}
-            >
-              {c.name}
-            </button>
-          ))}
+          {options.map((opt) =>
+            opt.kind === 'connector' && opt.connector ? (
+              <button
+                key={opt.key}
+                type="button"
+                role="menuitem"
+                className="nav-wallet-menu-item"
+                onClick={() => {
+                  connect({ connector: opt.connector! });
+                  setOpen(false);
+                }}
+              >
+                <span className="nav-wallet-menu-label">{opt.label}</span>
+                {opt.hint && <span className="nav-wallet-menu-hint">{opt.hint}</span>}
+              </button>
+            ) : (
+              <a
+                key={opt.key}
+                role="menuitem"
+                className="nav-wallet-menu-item"
+                href={opt.href}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span className="nav-wallet-menu-label">{opt.label} ↗</span>
+                {opt.hint && <span className="nav-wallet-menu-hint">{opt.hint}</span>}
+              </a>
+            ),
+          )}
         </div>
       )}
     </div>
