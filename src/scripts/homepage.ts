@@ -421,10 +421,11 @@ function applyKnownSupplySnapshot(): void {
   const max = onchain.maxSupply;
   if (max <= 0) return;
   const pctRaw = (circ / max) * 100;
+  const pctClamped = Math.max(0, Math.min(100, pctRaw));
   const supplyEl = document.getElementById('supply-count');
   if (supplyEl) supplyEl.textContent = circ.toLocaleString(numberLocale);
   const bar = document.getElementById('supply-bar');
-  if (bar) bar.style.width = `${pctRaw}%`;
+  if (bar) bar.style.width = `${pctClamped}%`;
   setCirculatingSupplyUIFromRatio(pctRaw);
 }
 
@@ -435,11 +436,12 @@ function setSupplyUIFromCurrentWei(currentWei: bigint): void {
   const curN = Number(currentSupply);
   const maxN = Number(maxSupply);
   const percentage = maxN > 0 ? (curN / maxN) * 100 : 0;
+  const percentageClamped = Math.max(0, Math.min(100, percentage));
 
   const supplyCount = document.getElementById('supply-count');
   const supplyBar = document.getElementById('supply-bar');
   if (supplyCount) supplyCount.textContent = curN.toLocaleString(numberLocale);
-  if (supplyBar) supplyBar.style.width = `${percentage}%`;
+  if (supplyBar) supplyBar.style.width = `${percentageClamped}%`;
   setCirculatingSupplyUIFromRatio(percentage);
 }
 
@@ -476,11 +478,12 @@ function updateUI(info: ContractInfo): void {
   const maxN = Number(maxSupply);
   const curN = Number(currentSupply);
   const percentage = maxN > 0 ? (curN / maxN) * 100 : 0;
+  const percentageClamped = Math.max(0, Math.min(100, percentage));
 
   if (supplyCount) supplyCount.textContent = curN.toLocaleString(numberLocale);
   if (infoAmount) infoAmount.textContent = `${Number(amount).toLocaleString(numberLocale)} $NEOFLW`;
   if (infoPrice) infoPrice.textContent = `${price} ETH`;
-  if (supplyBar) supplyBar.style.width = `${percentage}%`;
+  if (supplyBar) supplyBar.style.width = `${percentageClamped}%`;
   setCirculatingSupplyUIFromRatio(percentage);
 
   if (!info.mintEnabled) {
