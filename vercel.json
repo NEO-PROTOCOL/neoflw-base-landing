@@ -4,6 +4,12 @@
   "outputDirectory": "dist",
   "trailingSlash": false,
   "cleanUrls": true,
+  "redirects": [
+    { "source": "/pt-br", "destination": "/", "permanent": true },
+    { "source": "/pt-br/", "destination": "/", "permanent": true },
+    { "source": "/pt-br/mint", "destination": "/mint", "permanent": true },
+    { "source": "/pt-br/mint/", "destination": "/mint", "permanent": true }
+  ],
   "env": {
     "PROJECT_NAME": "NEOFLW Token webapp"
   },
