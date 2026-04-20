@@ -115,26 +115,80 @@ const pt = locale === 'pt-BR';
                 </div>
             </div>
 
-            <div class="bc bc-w12" style="background:var(--glass);">
-                <div class="bc-label">{pt ? 'Estatísticas Ao Vivo' : 'Live Stats'} <span id="stats-status" style="font-size:0.6rem;color:var(--green);margin-left:0.5rem;opacity:0;">● {pt ? 'ao vivo' : 'live'}</span></div>
-                <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));gap:var(--fib4);margin-top:var(--fib3);">
-                    <div>
-                        <div class="stat-cell-label">{pt ? 'Preço do Token' : 'Token Price'}</div>
-                        <div class="bc-number-huge" id="stat-price">—</div>
+            <div class="bc bc-w6 live-stats-mini">
+                <span id="stats-status" hidden>●</span>
+                <div class="live-stats-row">
+                    <div class="live-stat">
+                        <span class="live-stat-label">{pt ? 'Preço' : 'Price'}</span>
+                        <span class="live-stat-value" id="stat-price">—</span>
                     </div>
-                    <div>
-                        <div class="stat-cell-label">{pt ? 'Volume 24h' : '24h Volume'}</div>
-                        <div class="bc-number-huge" id="stat-volume">—</div>
+                    <div class="live-stat">
+                        <span class="live-stat-label">{pt ? 'Volume 24h' : '24h Volume'}</span>
+                        <span class="live-stat-value" id="stat-volume">—</span>
                     </div>
-                    <div>
-                        <div class="stat-cell-label">{pt ? 'Market Cap' : 'Market Cap'}</div>
-                        <div class="bc-number-huge pink" id="stat-mcap">—</div>
+                    <div class="live-stat">
+                        <span class="live-stat-label">{pt ? 'Market Cap' : 'Market Cap'}</span>
+                        <span class="live-stat-value pink" id="stat-mcap">—</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<style>
+    .live-stats-mini {
+        padding: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        overflow: visible !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        box-shadow: none !important;
+    }
+    .live-stats-mini:hover {
+        transform: none !important;
+        border-color: transparent !important;
+        box-shadow: none !important;
+    }
+    .live-stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.6rem;
+    }
+    .live-stat {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        min-width: 0;
+    }
+    .live-stat-label {
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-3);
+        font-weight: 600;
+    }
+    .live-stat-value {
+        font-family: var(--mono);
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .live-stat-value.pink { color: var(--pink); }
+
+    @media (min-width: 860px) {
+        .live-stats-mini { grid-column: 4 / span 6; }
+    }
+    @media (max-width: 560px) {
+        .live-stats-row { grid-template-columns: 1fr; gap: 0.5rem; }
+    }
+</style>
 
 <script define:vars={{ pt }} is:inline>
     function simulateFollow() {

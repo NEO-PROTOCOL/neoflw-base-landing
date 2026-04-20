@@ -1,0 +1,393 @@
+---
+import { Image } from 'astro:assets';
+import { BASESCAN_TOKEN_URL } from '../web3/constants';
+
+interface Props {
+  locale?: 'en' | 'pt-BR';
+}
+const { locale = 'pt-BR' } = Astro.props;
+const pt = locale === 'pt-BR';
+---
+
+<section class="tech-hero" id="tech-hero">
+  <div class="wrap">
+    <div class="section-eyebrow">
+      {pt ? 'Defesa Técnica' : 'Technical Defense'}
+    </div>
+    <h1 class="tech-title">
+      {pt ? (
+        <>
+          <span>Por que confiar no </span>
+          <span class="accent">$NEOFLW</span>
+          <br />
+          <span class="tech-title-sub">
+            Arquitetura on-chain auditável, padrões abertos e zero proxies.
+          </span>
+        </>
+      ) : (
+        <>
+          <span>Why trust </span>
+          <span class="accent">$NEOFLW</span>
+          <br />
+          <span class="tech-title-sub">
+            Auditable on-chain architecture, open standards, and zero proxies.
+          </span>
+        </>
+      )}
+    </h1>
+    <p class="tech-lede">
+      {pt
+        ? 'Esta página consolida toda a defesa técnica do contrato $NEOFLW: rede de deploy, verificação on-chain, parceria de engenharia, recursos do token e a interface Solidity. Cada decisão aqui é pública, verificável e imutável.'
+        : 'This page consolidates the full technical defense of the $NEOFLW contract: deploy network, on-chain verification, engineering partnership, token features, and the Solidity interface. Every decision here is public, verifiable, and immutable.'}
+    </p>
+  </div>
+</section>
+
+<section class="bento-section tech-section" id="tech">
+  <div class="wrap">
+    <div class="bento">
+
+      <div class="bc bc-w3 bc-network">
+        <div class="network-ring">
+          <Image
+            src="/large_Base_Symbol_Blue_ee3f3fb0a5.png"
+            alt="Base Logo"
+            width="96"
+            height="96"
+            loading="lazy"
+          />
+        </div>
+        <div class="network-name">Base L2</div>
+        <div class="network-sub">Chain ID 8453</div>
+        <div style="font-size:0.75rem;color:var(--text-3);margin-top:0.25rem;">{pt ? 'Ethereum Camada 2' : 'Ethereum Layer 2'}</div>
+      </div>
+
+      <div class="bc bc-verified bc-w4">
+        <div class="verified-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:24px;height:24px;"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="bc-label">{pt ? 'Verificação' : 'Verification'}</div>
+        <div class="bc-title" style="color:var(--blue);">{pt ? 'Verificado<br>on-chain' : 'On-chain<br>Verified'}</div>
+        <div style="font-size:0.78rem;color:var(--text-2);margin-top:0.5rem;line-height:1.6;">Source code
+          {pt ? 'publicamente verificável na Basescan. Zero proxies escondendo lógica.' : 'publicly verifiable on Basescan. Zero proxies hiding logic.'}</div>
+        <a href={BASESCAN_TOKEN_URL} target="_blank"
+          rel="noopener"
+          style="display:inline-block;margin-top:1.25rem;padding:0.5rem 1rem;border-radius:999px;background:var(--blue-dim);border:1px solid rgba(0,82,255,0.25);color:var(--blue);font-size:0.75rem;font-weight:600;text-decoration:none;">{pt ? 'Ver Contrato' : 'View Contract'} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:10px;height:10px;margin-bottom:-1px;"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+
+        <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(0,82,255,0.15);display:flex;flex-direction:column;gap:0.75rem;">
+          <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue);font-weight:800;opacity:0.7;">{pt ? 'Parceiro Tecnológico Central' : 'Core Technology Partner'}</div>
+          <a href="https://nsfactory.xyz" target="_blank" rel="noopener" style="display:inline-block;transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);" onmouseover="this.style.transform='translateX(4px)'" onmouseout="this.style.transform='none'">
+            <Image
+              src="/logo_name_horizontal_color.png"
+              alt="NEØ SMART FACTORY"
+              style="height:24px;display:block;"
+              width="240"
+              height="24"
+              loading="lazy"
+            />
+          </a>
+          <div style="font-size:0.7rem;color:var(--text-3);line-height:1.4;">{pt ? 'Desenvolvido pelo time NEØ SMART FACTORY para contratos inteligentes seguros e de nível institucional na Base.' : 'Developed by the NEØ SMART FACTORY team for secure, institutional-grade smart contracts on Base.'}</div>
+        </div>
+      </div>
+
+      <div class="bc bc-w9">
+        <div class="bc-label">{pt ? 'Recursos do Token' : 'Token Features'}</div>
+        <div class="bc-title">{pt ? 'Construído para o ecossistema' : 'Built for the ecosystem'}</div>
+        <div class="feature-list">
+          <div class="feature-row">
+            <div class="feature-row-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            </div>
+            <div>
+              <div style="font-weight:600;color:var(--text);font-size:0.85rem;">{pt ? 'Burnable' : 'Burnable'}</div>
+              <div style="font-size:0.75rem;margin-top:0.15rem;">{pt ? 'Holders podem queimar tokens permanentemente, habilitando mecânicas deflacionárias.' : 'Holders can permanently burn tokens, enabling deflationary mechanics.'}</div>
+            </div>
+            <span class="feature-row-badge">EIP-3664</span>
+          </div>
+          <div class="feature-row">
+            <div class="feature-row-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            </div>
+            <div>
+              <div style="font-weight:600;color:var(--text);font-size:0.85rem;">{pt ? 'Aprovações Sem Gas' : 'Gasless Approvals'}
+              </div>
+              <div style="font-size:0.75rem;margin-top:0.15rem;">{pt ? 'EIP-2612 Permit: assinaturas de aprovação off-chain, zero transações extras.' : 'EIP-2612 Permit: off-chain approval signatures, zero extra transactions.'}</div>
+            </div>
+            <span class="feature-row-badge">EIP-2612</span>
+          </div>
+          <div class="feature-row">
+            <div class="feature-row-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M21 16.5V7.5L12 2.25L3 7.5V16.5L12 21.75L21 16.5ZM12 4.125L18.75 8.25V15.75L12 19.875L5.25 15.75V8.25L12 4.125Z"/></svg>
+            </div>
+            <div>
+              <div style="font-weight:600;color:var(--text);font-size:0.85rem;">{pt ? 'Ownable 2-Step' : 'Ownable 2-Step'}</div>
+              <div style="font-size:0.75rem;margin-top:0.15rem;">{pt ? 'Transferência de propriedade em duas etapas evita perda acidental de chave admin.' : 'Two-step ownership transfer prevents accidental admin key loss.'}</div>
+            </div>
+            <span class="feature-row-badge">Security</span>
+          </div>
+          <div class="feature-row">
+            <div class="feature-row-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            </div>
+            <div>
+              <div style="font-weight:600;color:var(--text);font-size:0.85rem;">{pt ? 'Pronto para Bridge' : 'Bridge Ready'}</div>
+              <div style="font-size:0.75rem;margin-top:0.15rem;">{pt ? 'Desenhado para multichain via bridge da Base e padrão LayerZero OFT.' : 'Designed for multichain via Base bridge and LayerZero OFT standard.'}</div>
+            </div>
+            <span class="feature-row-badge">{pt ? 'Multichain' : 'Multichain'}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bc bc-code bc-w6">
+        <div class="bc-label">{pt ? 'Interface do Contrato' : 'Contract Interface'}</div>
+        <div class="bc-title" style="font-family:var(--mono);font-size:0.95rem;">NeoFlwToken.sol</div>
+        <div class="code-block">
+          <span class="code-line"><span class="c-cmt">// NEOFLW ERC-20 · Base Mainnet</span></span>
+          <span class="code-line"><span class="c-key">contract</span> <span
+              class="c-pnk">NeoFlwToken</span> <span class="c-key">is</span></span>
+          <span class="code-line">&nbsp;&nbsp;<span class="c-val">ERC20</span>,</span>
+          <span class="code-line">&nbsp;&nbsp;<span class="c-val">ERC20Burnable</span>,</span>
+          <span class="code-line">&nbsp;&nbsp;<span class="c-val">ERC20Permit</span>,</span>
+          <span class="code-line">&nbsp;&nbsp;<span class="c-val">Ownable2Step</span></span>
+          <span class="code-line">{`{`}</span>
+          <span class="code-line">&nbsp;&nbsp;<span class="c-key">uint256</span> <span
+              class="c-str">totalSupply</span></span>
+          <span class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;= <span
+              class="c-val">1_000_000_000e18</span>;</span>
+          <span class="code-line">&nbsp;&nbsp;<span class="c-cmt">// publicMint · Bridging</span></span>
+          <span class="code-line">{`}`}</span>
+        </div>
+      </div>
+
+      <div class="bc bc-w6 bc-defense">
+        <div class="bc-label">{pt ? 'Garantias de Segurança' : 'Security Guarantees'}</div>
+        <div class="bc-title">{pt ? 'O que nunca acontece por design' : 'What never happens by design'}</div>
+        <ul class="defense-list">
+          <li>
+            <strong>{pt ? 'Sem proxy upgrade' : 'No proxy upgrade'}</strong>
+            <span>{pt ? 'Contrato é imutável. Nenhum deploy futuro pode mudar a lógica.' : 'Contract is immutable. No future deploy can change the logic.'}</span>
+          </li>
+          <li>
+            <strong>{pt ? 'Sem mint privilegiado' : 'No privileged mint'}</strong>
+            <span>{pt ? 'Owner não tem função para cunhar tokens após deploy.' : 'Owner has no function to mint tokens after deploy.'}</span>
+          </li>
+          <li>
+            <strong>{pt ? 'Sem blocklist' : 'No blocklist'}</strong>
+            <span>{pt ? 'Nenhum endereço pode ser congelado ou excluído da rede.' : 'No address can be frozen or excluded from the network.'}</span>
+          </li>
+          <li>
+            <strong>{pt ? 'Sem taxa variável' : 'No variable fee'}</strong>
+            <span>{pt ? 'Transferências são ERC-20 puras. Zero surpresa em transações.' : 'Transfers are pure ERC-20. Zero surprise in transactions.'}</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="bc bc-w6 bc-standards">
+        <div class="bc-label">{pt ? 'Conformidade com Padrões' : 'Standards Compliance'}</div>
+        <div class="bc-title">{pt ? 'Stack 100% OpenZeppelin' : '100% OpenZeppelin stack'}</div>
+        <div class="std-grid">
+          <div class="std-item">
+            <div class="std-badge">ERC-20</div>
+            <div class="std-label">{pt ? 'Base fungível padrão' : 'Standard fungible base'}</div>
+          </div>
+          <div class="std-item">
+            <div class="std-badge">ERC-20 Burnable</div>
+            <div class="std-label">{pt ? 'Queima permanente de supply' : 'Permanent supply burn'}</div>
+          </div>
+          <div class="std-item">
+            <div class="std-badge">ERC-20 Permit</div>
+            <div class="std-label">{pt ? 'Assinaturas EIP-2612' : 'EIP-2612 signatures'}</div>
+          </div>
+          <div class="std-item">
+            <div class="std-badge">Ownable2Step</div>
+            <div class="std-label">{pt ? 'Ownership com confirmação' : 'Ownership with confirmation'}</div>
+          </div>
+        </div>
+        <p class="std-note">
+          {pt
+            ? 'Todos os módulos herdados são auditados pela comunidade OpenZeppelin há mais de 6 anos em produção.'
+            : 'All inherited modules are community-audited by OpenZeppelin with 6+ years in production.'}
+        </p>
+      </div>
+
+      <div class="bc bc-w12 bc-transparency">
+        <div class="bc-label">{pt ? 'Transparência Operacional' : 'Operational Transparency'}</div>
+        <div class="bc-title">{pt ? 'Tudo que você pode verificar agora' : 'Everything you can verify right now'}</div>
+        <div class="verify-grid">
+          <a class="verify-item" href={BASESCAN_TOKEN_URL} target="_blank" rel="noopener">
+            <div class="verify-step">01</div>
+            <div class="verify-step-title">{pt ? 'Ler o código' : 'Read the source'}</div>
+            <div class="verify-step-desc">{pt ? 'Abra o Basescan e inspecione cada função. Nada está oculto.' : 'Open Basescan and inspect every function. Nothing is hidden.'}</div>
+          </a>
+          <a class="verify-item" href={`${BASESCAN_TOKEN_URL}#code`} target="_blank" rel="noopener">
+            <div class="verify-step">02</div>
+            <div class="verify-step-title">{pt ? 'Comparar bytecode' : 'Match bytecode'}</div>
+            <div class="verify-step-desc">{pt ? 'O bytecode deployado bate com o source verificado. Garantia de integridade.' : 'Deployed bytecode matches the verified source. Integrity guarantee.'}</div>
+          </a>
+          <a class="verify-item" href={`${BASESCAN_TOKEN_URL}#readContract`} target="_blank" rel="noopener">
+            <div class="verify-step">03</div>
+            <div class="verify-step-title">{pt ? 'Ler estado' : 'Read state'}</div>
+            <div class="verify-step-desc">{pt ? 'Consulte supply, owner e mint status sem intermediários.' : 'Query supply, owner, and mint status with no middleman.'}</div>
+          </a>
+          <a class="verify-item" href="https://github.com/NEO-FlowOFF/neoflw-token" target="_blank" rel="noopener">
+            <div class="verify-step">04</div>
+            <div class="verify-step-title">{pt ? 'Clonar o repo' : 'Clone the repo'}</div>
+            <div class="verify-step-desc">{pt ? 'Source, tests e scripts de deploy são open source no GitHub.' : 'Source, tests, and deploy scripts are open source on GitHub.'}</div>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+  .tech-hero {
+    padding-top: calc(var(--fib6) + var(--fib5));
+    padding-bottom: var(--fib4);
+  }
+  .tech-title {
+    margin: 0.3rem 0 1rem;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  .tech-title .accent {
+    background: linear-gradient(135deg, var(--pink) 0%, var(--blue) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .tech-title-sub {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-weight: 500;
+    color: var(--text-2);
+    font-size: 0.46em;
+    line-height: 1.4;
+  }
+  .tech-lede {
+    max-width: 780px;
+    color: var(--text-2);
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin: 0;
+  }
+  .tech-section { padding-top: var(--fib3); }
+
+  .bc-defense .defense-list {
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .bc-defense .defense-list li {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.5rem 0.9rem;
+    align-items: baseline;
+    padding: 0.75rem 0.95rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .bc-defense .defense-list strong {
+    color: var(--green);
+    font-size: 0.82rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .bc-defense .defense-list span {
+    color: var(--text-2);
+    font-size: 0.78rem;
+    line-height: 1.55;
+  }
+
+  .bc-standards .std-grid {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+  }
+  .bc-standards .std-item {
+    padding: 0.75rem 0.85rem;
+    border-radius: 12px;
+    background: rgba(255, 0, 204, 0.06);
+    border: 1px solid rgba(255, 0, 204, 0.18);
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .bc-standards .std-badge {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--pink);
+  }
+  .bc-standards .std-label {
+    font-size: 0.72rem;
+    color: var(--text-2);
+    line-height: 1.4;
+  }
+  .bc-standards .std-note {
+    margin: 1rem 0 0;
+    font-size: 0.75rem;
+    color: var(--text-3);
+    line-height: 1.55;
+  }
+
+  .bc-transparency .verify-grid {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+  .bc-transparency .verify-item {
+    padding: 1rem;
+    border-radius: 14px;
+    background: rgba(0, 82, 255, 0.06);
+    border: 1px solid rgba(0, 82, 255, 0.22);
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    transition: transform 0.18s ease, border-color 0.18s ease;
+  }
+  .bc-transparency .verify-item:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0, 82, 255, 0.5);
+  }
+  .bc-transparency .verify-step {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--blue);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+  .bc-transparency .verify-step-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .bc-transparency .verify-step-desc {
+    font-size: 0.72rem;
+    line-height: 1.5;
+    color: var(--text-2);
+  }
+
+  @media (max-width: 900px) {
+    .bc-standards .std-grid { grid-template-columns: 1fr; }
+    .bc-transparency .verify-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 560px) {
+    .bc-transparency .verify-grid { grid-template-columns: 1fr; }
+    .bc-defense .defense-list li {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+    }
+  }
+</style>
