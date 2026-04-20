@@ -21,6 +21,7 @@ import {
   NEOFLW_ABI,
   NEOFLW_ADDRESS,
 } from '../../web3/constants';
+import { withBuilderCode } from '../../web3/attribution';
 
 type Call = { to: Hex; data?: Hex; value?: bigint };
 
@@ -75,10 +76,12 @@ function MintInner({ pt }: Props) {
     return [
       {
         to: NEOFLW_ADDRESS,
-        data: encodeFunctionData({
-          abi: NEOFLW_ABI,
-          functionName: 'publicMint',
-        }),
+        data: withBuilderCode(
+          encodeFunctionData({
+            abi: NEOFLW_ABI,
+            functionName: 'publicMint',
+          }),
+        ),
         value: priceWei,
       },
     ];
