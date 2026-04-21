@@ -1,5 +1,7 @@
 # NEØ FlowOFF — Token Page
 
+![neoflw-token-page banner](./docs/assets/neoflw-token-page-banner.svg)
+
 > **neoflw.xyz** · **neoflw.eth** · previews Vercel em `*.vercel.app` (não canónico)
 
 Onchain landing + gasless mint page for the **NEOFLW** token on Base Mainnet.
@@ -23,7 +25,7 @@ Built as an Astro static site with React islands for wallet/mint interactions.
 ## 🪙 Token Info
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | **Name** | NEØ FlowOFF |
 | **Symbol** | NEOFLW |
 | **Network** | Base Mainnet (chain `8453`) |
@@ -37,7 +39,7 @@ Built as an Astro static site with React islands for wallet/mint interactions.
 ## 🧱 Stack
 
 | Layer | Tooling |
-|---|---|
+| --- | --- |
 | Framework | [Astro 5](https://astro.build) (`output: 'static'`) |
 | UI islands | React 19 (`@astrojs/react`) |
 | Onchain | `@coinbase/onchainkit` · `wagmi@^2.19` · `viem@^2.21` · `@tanstack/react-query` |
@@ -51,7 +53,7 @@ Built as an Astro static site with React islands for wallet/mint interactions.
 
 ## 📁 Project structure
 
-```
+```text
 src/
 ├── assets/                 # Images optimized at build (PNGs, logos)
 ├── components/
@@ -102,11 +104,12 @@ pnpm preview
 Available scripts (see `package.json`):
 
 | Script | Action |
-|---|---|
+| --- | --- |
 | `pnpm dev` | Astro dev server with HMR |
 | `pnpm build` | Static build to `dist/` |
 | `pnpm preview` | Serve `dist/` locally |
 | `pnpm astro` | Run any `astro` CLI command |
+| `pnpm lint:md` | Validate Markdown (`docs/MARKDOWN_STYLE_GUIDE.md`, `.markdownlint.json`) |
 
 ---
 
@@ -120,7 +123,7 @@ Create `.env` (local) and mirror in **Vercel → Project → Environment Variabl
 ### Required (client)
 
 | Variable | Purpose |
-|---|---|
+| --- | --- |
 | `PUBLIC_ONCHAINKIT_API_KEY` | CDP API key — also used to derive the Paymaster URL |
 | `PUBLIC_BASE_RPC_URL` | Base RPC endpoint (CDP RPC recommended for higher limits) |
 | `PUBLIC_CONTRACT_ADDRESS` | NEOFLW contract address |
@@ -130,7 +133,7 @@ Create `.env` (local) and mirror in **Vercel → Project → Environment Variabl
 ### Optional (server / integrations)
 
 | Variable | Purpose |
-|---|---|
+| --- | --- |
 | `TURSO_DATABASE_URL` | libsql connection for wallet analytics |
 | `TURSO_AUTH_TOKEN` | Turso auth token |
 | `CDP_API_KEY_NAME` | Coinbase Developer Platform — Secret API key name |
@@ -144,11 +147,14 @@ Create `.env` (local) and mirror in **Vercel → Project → Environment Variabl
 
 ## ⚡ Gasless mint (Paymaster)
 
-The `MintCard` component uses OnchainKit's `<Transaction isSponsored />` together with the Paymaster URL derived from `PUBLIC_ONCHAINKIT_API_KEY` (`Web3Providers.tsx`).
+The `MintCard` component uses OnchainKit's `<Transaction isSponsored />` together with the Paymaster URL
+derived from `PUBLIC_ONCHAINKIT_API_KEY` (`Web3Providers.tsx`).
 
-When a Coinbase Smart Wallet is connected, the mint UserOperation is paid by CDP — the user signs but **does not pay gas**. Externally Owned Accounts (EOAs from MetaMask, etc.) fall back to standard ETH gas.
+When a Coinbase Smart Wallet is connected, the mint UserOperation is paid by CDP — the user signs but **does not
+pay gas**. Externally Owned Accounts (EOAs from MetaMask, etc.) fall back to standard ETH gas.
 
-To configure the policy: **CDP Dashboard → Paymaster → Base Mainnet → add the contract address as an allowed recipient**.
+To configure the policy: **CDP Dashboard → Paymaster → Base Mainnet → add the contract address as an allowed
+recipient**.
 
 ---
 
@@ -159,7 +165,8 @@ Routing is done by directory:
 - `/` and `/mint` → English (`locale: 'en'`)
 - `/pt-br/` and `/pt-br/mint` → Portuguese (`locale: 'pt-BR'`)
 
-Each `Section` component receives `locale` as a prop and switches strings inline. The `Nav` component exposes a language toggle (PT ↔ EN).
+Each `Section` component receives `locale` as a prop and switches strings inline. The `Nav` component exposes a
+language toggle (PT ↔ EN).
 
 ---
 
@@ -176,7 +183,8 @@ TL;DR — push to `main`, Vercel auto-deploys. ENS `neoflw.eth` resolves through
 - 🌐 Website: <https://neoflw.xyz>
 - 🐦 Twitter / X: <https://x.com/neoflow_on_chain>
 - 🔍 Basescan: <https://basescan.org/token/0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b>
-- 💱 Uniswap: <https://app.uniswap.org/swap?outputCurrency=0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b>
+- 💱 Uniswap:
+  <https://app.uniswap.org/swap?outputCurrency=0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b>
 - 🏗️ Base.dev: configured via `PUBLIC_BASE_APP_ID`
 
 ---

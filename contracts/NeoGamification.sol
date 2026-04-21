@@ -13,11 +13,11 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
  *  █░▀█ ██▄ █▄█   ▄█ █░▀░█ █▀█ █▀▄ ░█░
  *
  *  NΞØ SMART FACTORY v0.5.3 — REWARD CONTRACT | GAMIFICATION
- *  Author: Eurycles Ramos Neto / NODE NEØ
+ *  Author: NODE NEØ
  *
  *  Licensed under MIT. Attribution to NΞØ Protocol is required for derivatives.
  *  Any fork or usage of this factory for financial protocols must reference:
- *  "Powered by NEO SMART FACTORY"
+ *  "Powered by NEØ SMART FACTORY"
  */
 
 /**

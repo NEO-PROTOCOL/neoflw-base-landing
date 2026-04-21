@@ -8,7 +8,8 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "lint:md": "markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.pnpm\" \"#.agents\" \"#.claude\""
   },
   "dependencies": {
     "3d-force-graph": "^1.80.0",
@@ -27,6 +28,7 @@
     "wagmi": "^2.19.5"
   },
   "devDependencies": {
+    "markdownlint-cli2": "^0.22.0",
     "@astrojs/check": "^0.9.8",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

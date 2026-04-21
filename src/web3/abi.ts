@@ -84,5 +84,21 @@ export const NEOFLW_ABI = [
 ] as const;
 
 export const BASE_CHAIN_ID = 8453;
-export const BASESCAN_URL =
-  (import.meta.env.PUBLIC_BASESCAN_URL ?? '').trim() || 'https://basescan.org';
+
+/**
+ * Basescan explorer origin (scheme + host only).
+ *
+ * Normaliza `PUBLIC_BASESCAN_URL` para o origin da URL, descartando
+ * qualquer path residual. Protege contra env mal-formado do tipo
+ * `https://basescan.org/token/0xabc...` que no passado gerou
+ * duplicação de path (`/token/0x.../token/0x...`) e 404 em todos os
+ * links do explorer na home. Fallback: `https://basescan.org`.
+ */
+export const BASESCAN_URL = (() => {
+  const raw = (import.meta.env.PUBLIC_BASESCAN_URL ?? '').trim();
+  try {
+    return new URL(raw || 'https://basescan.org').origin;
+  } catch {
+    return 'https://basescan.org';
+  }
+})();

@@ -14,14 +14,14 @@ vercel deploy --prod
 
 1. Create GitHub repo: `NEO-FlowOFF/neoflw-token-page`
 2. Push code: `git push origin main`
-3. Go to https://vercel.com
+3. Go to <https://vercel.com>
 4. Import GitHub repo
 5. Set domain: `neoflowoff.vercel.app` (auto)
 6. Deploy
 
 ### Expected Output
 
-```
+```text
 ✓ Production: https://neoflowoff.vercel.app
 ✓ Domain: neoflowoff.vercel.app
 ✓ Status: Ready
@@ -31,7 +31,7 @@ vercel deploy --prod
 
 ## Step 2: Setup ENS (10 min)
 
-### Via ENS Manager (https://app.ens.domains)
+### Via ENS Manager (<https://app.ens.domains>)
 
 1. **Connect Wallet** (MetaMask, Rabby, etc.)
 
@@ -40,10 +40,12 @@ vercel deploy --prod
 3. **Click:** "Set Records" → "Edit Records"
 
 4. **Add Text Record:**
+
    - Type: `url`
    - Value: `https://neoflowoff.vercel.app`
 
 5. **Alternative - Add IPFS (if using IPFS):**
+
    - Type: `contenthash`
    - Value: `ipfs://QmXXXXXX...` (IPFS hash)
 
@@ -66,12 +68,14 @@ Once ENS is set, automatically accessible via:
 If you want `https://token.flowoff.xyz` or similar:
 
 ### On Vercel
+
 1. Go to Project Settings → Domains
 2. Add custom domain: `token.flowoff.xyz`
 3. Add DNS records (Vercel will show)
 
 ### On DNS Provider (Cloudflare, Route53, etc.)
-```
+
+```text
 CNAME: token.flowoff.xyz → neoflowoff.vercel.app
 CNAME: www.token.flowoff.xyz → neoflowoff.vercel.app
 ```
@@ -84,8 +88,8 @@ CNAME: www.token.flowoff.xyz → neoflowoff.vercel.app
 - [ ] Production URL working
 - [ ] ENS record updated (if using .limo)
 - [ ] Links accessible:
-  - [ ] https://neoflowoff.eth.limo
-  - [ ] https://neoflowoff.vercel.app
+  - [ ] <https://neoflowoff.eth.limo>
+  - [ ] <https://neoflowoff.vercel.app>
   - [ ] Links to Basescan work
   - [ ] Links to Uniswap work
 - [ ] Mobile responsive (test on phone)
@@ -106,9 +110,11 @@ Use these URLs when submitting to listing platforms:
 ## 📊 Monitoring
 
 ### Vercel Analytics
-- https://vercel.com/[team]/neoflw-token-page/analytics
+
+- <https://vercel.com/[team]/neoflw-token-page/analytics>
 
 ### Check Status
+
 ```bash
 # Test site accessibility
 curl -I https://neoflowoff.eth.limo
@@ -141,7 +147,7 @@ git push origin main
 ## 🆘 Troubleshooting
 
 | Issue | Solution |
-|-------|----------|
+| --- | --- |
 | `neoflowoff.eth.limo` not resolving | Wait 5-10 min for ENS to propagate, clear cache, try incognito |
 | Vercel deploy fails | Check `npm run build` locally, ensure no errors |
 | ENS record not updating | Confirm wallet is owner, check gas, wait for confirmation |
@@ -162,4 +168,5 @@ After deployment:
 ---
 
 **Deployed:** 2026-03-17
+
 **Status:** 🟢 Ready for listing submissions
