@@ -14,25 +14,29 @@ Ele é propositalmente curto no seed.
 
 - `__FILL__` deve ser substituído por valores finais antes de publicar.
 
-## Verificação automática (markdownlint) — recomendação
+## Verificação automática (markdownlint)
 
-Este repo **ainda não** versiona um `.markdownlint.json` próprio. A configuração
-abaixo é a referência sugerida para quando o lint de markdown for ativado —
-copie para a raiz como `.markdownlint.json` quando quiser adotá-lo.
+Na raiz deste repositório existe **`.markdownlint.json`** com o perfil abaixo. Rode **`pnpm lint:md`**
+(localmente ou no CI) para validar.
 
-Perfil recomendado para documentos longos e históricos:
+Perfil para documentos longos e históricos:
 
-- Comprimento de linha 120 (`MD013: { line_length: 120 }`).
-- Tolerância a HTML inline e a comentários `<!-- markdownlint-disable -->`.
-- Títulos duplicados e hierarquia não estrita permitidos em roadmaps/changelogs.
-- Blocos de código sem linguagem permitidos (diagramas ASCII em `text`).
+- Comprimento de linha **120** (`MD013`).
+- Tolerância a HTML inline (`MD033` desligada) e a comentários `<!-- markdownlint-disable -->`.
+- Títulos duplicados permitidos em changelogs (`MD024` desligada).
+- URLs “nuas” permitidas onde fizer sentido (`MD034` desligada); prefira `<https://…>` em texto corrido se
+  quiser silêncio estrito.
+- Estilo de pipes em tabelas não forçado (`MD060` desligada); mantenha pipes com espaços por legibilidade.
+- Blocos de código sem linguagem: use ` ```text ` para diagramas ASCII (evita ruído de `MD040` onde não couber
+  linguagem real).
 
 Regras que valem manter **ativas** no hábito de escrita:
+
 **MD031** (linha em branco antes/depois de fences ` ``` `),
 **MD032** (linha em branco em torno de listas),
 consistência de marcadores de lista (`-` em todos os níveis).
 
-Quando for ativar de fato, instale com `pnpm add -D markdownlint-cli2` e
-adicione um script `lint:md` excluindo `node_modules`, `.pnpm` e pastas
-históricas (`docs/archive`, etc.), alinhado ao check local e ao CI.
+Instalação (já refletida em `package.json`):
 
+- `pnpm add -D markdownlint-cli2`
+- script `lint:md` ignora `node_modules`, `.pnpm`, `.agents/` e `.claude/` (skills vendorizadas).
