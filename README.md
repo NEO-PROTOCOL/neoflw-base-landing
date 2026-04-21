@@ -73,11 +73,11 @@ src/
 ├── layouts/
 │   └── Layout.astro
 ├── pages/
-│   ├── index.astro         # EN home
-│   ├── mint.astro          # EN mint page
-│   └── pt-br/
-│       ├── index.astro     # PT-BR home
-│       └── mint.astro      # PT-BR mint page
+│   ├── en/                 # English routes
+│   │   ├── index.astro
+│   │   └── mint.astro
+│   ├── index.astro         # PT-BR home
+│   └── mint.astro          # PT-BR mint page
 └── web3/
     ├── wagmi.ts            # Wagmi config (Base + connectors)
     └── abi.ts              # Contract address + ABI + chain constants
@@ -127,7 +127,7 @@ Create `.env` (local) and mirror in **Vercel → Project → Environment Variabl
 | `PUBLIC_ONCHAINKIT_API_KEY` | CDP API key — also used to derive the Paymaster URL |
 | `PUBLIC_BASE_RPC_URL` | Base RPC endpoint (CDP RPC recommended for higher limits) |
 | `PUBLIC_CONTRACT_ADDRESS` | NEOFLW contract address |
-| `PUBLIC_BASESCAN_URL` | Basescan token URL |
+| `PUBLIC_BASESCAN_URL` | Basescan explorer origin (scheme + host only — no path) |
 | `PUBLIC_SITE_URL` | Public site URL (used in OG / canonical) |
 
 ### Optional (server / integrations)
@@ -162,8 +162,8 @@ recipient**.
 
 Routing is done by directory:
 
-- `/` and `/mint` → English (`locale: 'en'`)
-- `/pt-br/` and `/pt-br/mint` → Portuguese (`locale: 'pt-BR'`)
+- `/` and `/mint` → Portuguese (`locale: 'pt-BR'`)
+- `/en/` and `/en/mint` → English (`locale: 'en'`)
 
 Each `Section` component receives `locale` as a prop and switches strings inline. The `Nav` component exposes a
 language toggle (PT ↔ EN).
