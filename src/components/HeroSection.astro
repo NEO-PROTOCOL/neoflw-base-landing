@@ -3,6 +3,8 @@ import { Image } from 'astro:assets';
 import neoflwMark from '../assets/neoflw.png';
 import {
     BASESCAN_TOKEN_URL,
+    KNOWN_CIRCULATING_TOKENS,
+    MAX_SUPPLY_TOKENS,
     NEOFLW_ADDRESS,
     UNISWAP_BUY_URL,
 } from '../web3/constants';
@@ -10,9 +12,19 @@ import {
 interface Props {
     locale?: 'en' | 'pt-BR';
 }
-const { locale = 'en' } = Astro.props;
+const { locale = 'pt-BR' } = Astro.props;
 const pt = locale === 'pt-BR';
-const mintPath = pt ? '/pt-br/mint' : '/mint';
+/** Fragmento relativo: mantém a mesma home (PT ou EN) e faz scroll à secção #mint. */
+const mintSectionHref = '#mint';
+
+const heroCircPctRaw = MAX_SUPPLY_TOKENS > 0 ? (KNOWN_CIRCULATING_TOKENS / MAX_SUPPLY_TOKENS) * 100 : 0;
+let heroCircLabel = '0%';
+if (heroCircPctRaw >= 99.995) heroCircLabel = '100%';
+else if (heroCircPctRaw > 0) {
+    if (heroCircPctRaw < 0.01) heroCircLabel = `${Number(heroCircPctRaw.toFixed(6))}%`;
+    else if (heroCircPctRaw < 1) heroCircLabel = `${heroCircPctRaw.toFixed(3)}%`;
+    else heroCircLabel = `${heroCircPctRaw.toFixed(2)}%`;
+}
 ---
 <section class="hero">
     <div class="wrap">
@@ -36,12 +48,12 @@ const mintPath = pt ? '/pt-br/mint' : '/mint';
                 </p>
                 <div class="hero-actions anim-4">
                     <div class="hero-ctas">
-                        <a href={mintPath} class="btn-fill" style="background:var(--pink);box-shadow:0 10px 30px var(--pink-glow);color:#fff;">
-                            {pt ? 'Resgatar Airdrop' : 'Claim Airdrop'}
+                        <a href={mintSectionHref} class="btn-fill" style="background:var(--pink);box-shadow:0 10px 30px var(--pink-glow);color:#fff;">
+                            {pt ? 'Mint Agora' : 'Mint Now'}
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:13px;height:13px;flex-shrink:0;"><path d="M12 2v20M5 12l7 7 7-7"/></svg>
                         </a>
                         <a href={UNISWAP_BUY_URL} class="btn-outline" target="_blank" rel="noopener">
-                            {pt ? 'Comprar na Uniswap' : 'Buy on Uniswap'}
+                            {pt ? 'Swap on Uniswap' : 'Swap on Uniswap'}
                         </a>
                         <a href={BASESCAN_TOKEN_URL} class="btn-outline" target="_blank" rel="noopener">{pt ? 'Explorar' : 'Scan'}</a>
                     </div>
@@ -50,7 +62,11 @@ const mintPath = pt ? '/pt-br/mint' : '/mint';
                         <div class="contract-chip">
                             <span class="chip-label">{pt ? 'Contrato' : 'Contract'}</span>
                             <div style="background:rgba(3, 3, 5, 0.95);padding:4px 10px;border-radius:12px;border:1px solid var(--border-b);display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
-                                <span class="chip-addr" id="addr" style="flex:1;min-width:0;color:var(--text-2);font-weight:700;">{NEOFLW_ADDRESS}</span>
+                                <span
+                                    class="chip-addr chip-addr--hero"
+                                    id="addr"
+                                    style="flex:1;min-width:0;font-family:var(--mono),ui-monospace,monospace;font-weight:500;"
+                                >{NEOFLW_ADDRESS}</span>
                                 <button type="button" class="chip-copy" style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px;color:var(--pink-soft);"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                                     {pt ? 'copiar' : 'copy'}
@@ -80,11 +96,11 @@ const mintPath = pt ? '/pt-br/mint' : '/mint';
                             </div>
                             <div class="hc-badge" style="display:flex;align-items:center;gap:4px;">
                                 <svg viewBox="0 0 24 24" fill="currentColor" style="width:10px;height:10px;color:var(--green);"><circle cx="12" cy="12" r="10"/></svg>
-                                {pt ? 'Ao vivo' : 'Live'}
+                                {pt ? 'On-Chain' : 'On-Chain'}
                             </div>
                         </div>
                         <div class="hc-supply-label">{pt ? 'Supply Total' : 'Total Supply'}</div>
-                        <div class="hc-supply">1,000,000,000 <span>NEOFLW</span></div>
+                        <div class="hc-supply">1,000,000,000</div>
                         <div class="hc-divider"></div>
                         <div class="hc-meta">
                             <div>
@@ -105,15 +121,15 @@ const mintPath = pt ? '/pt-br/mint' : '/mint';
                             </div>
                         </div>
                         <div class="hc-bar">
-                            <div class="hc-bar-row"><span>{pt ? 'Circulante' : 'Circulating'}</span><span id="hc-circ-pct">—</span></div>
+                            <div class="hc-bar-row"><span>{pt ? 'Circulante' : 'Circulating'}</span><span id="hc-circ-pct">{heroCircLabel}</span></div>
                             <div class="hc-bar-track">
-                                <div class="hc-bar-fill" id="hc-bar-fill" style="width:0%"></div>
+                                <div class="hc-bar-fill" id="hc-bar-fill" style={`width:${Math.min(100, heroCircPctRaw)}%`}></div>
                             </div>
                         </div>
 
                         <div style="margin-top:1.5rem;padding:0.75rem;border-radius:12px;background:rgba(0,255,136,0.05);border:1px solid rgba(0,255,136,0.1);display:flex;align-items:center;gap:10px;">
                             <div style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);"></div>
-                            <span style="font-size:0.65rem;font-family:var(--mono);color:var(--green);letter-spacing:0.05em;">{pt ? 'VALIDAÇÃO_SMART: OK' : 'SMART_VALIDATION: PASS'}</span>
+                            <span style="font-size:0.65rem;font-family:var(--mono);color:var(--green);letter-spacing:0.05em;">{pt ? 'Contrato Verificado: OK' : 'Contract Verified: PASS'}</span>
                             <a href="#verify" style="margin-left:auto;font-size:0.6rem;color:var(--text-3);text-decoration:underline;">{pt ? 'Ver Prova' : 'View Proof'}</a>
                         </div>
                     </div>

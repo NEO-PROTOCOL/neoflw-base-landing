@@ -3,7 +3,6 @@ import Layout from '../layouts/Layout.astro';
 import Nav from './Nav.astro';
 import HeroSection from './HeroSection.astro';
 import ProofSection from './ProofSection.astro';
-import StatsBar from './StatsBar.astro';
 import TokenomicsSection from './TokenomicsSection.astro';
 import ChartSection from './ChartSection.astro';
 import VerifySection from './VerifySection.astro';
@@ -12,6 +11,7 @@ import {
   BASESCAN_TOKENSUPPLY_API_URL,
   DEXSCREENER_PAIR_API_URL,
   GECKOTERMINAL_POOL_API_URL,
+  KNOWN_CIRCULATING_TOKENS,
   MAX_SUPPLY_TOKENS,
   NEOFLW_ADDRESS,
   SITE_URL,
@@ -20,7 +20,7 @@ import {
 interface Props {
   locale?: 'en' | 'pt-BR';
 }
-const { locale = 'en' } = Astro.props;
+const { locale = 'pt-BR' } = Astro.props;
 const pt = locale === 'pt-BR';
 const numberLocale = pt ? 'pt-BR' : 'en-US';
 const layoutTitle = pt ? 'NEOFLW - Token NEØ FLOWOFF' : 'NEOFLW - NEØ FLOWOFF Token';
@@ -34,6 +34,7 @@ const onchain = {
   contract: NEOFLW_ADDRESS,
   contractLc: NEOFLW_ADDRESS.toLowerCase(),
   maxSupply: MAX_SUPPLY_TOKENS,
+  knownCirculatingTokens: KNOWN_CIRCULATING_TOKENS,
   geckoApi: GECKOTERMINAL_POOL_API_URL,
   dexscreenerApi: DEXSCREENER_PAIR_API_URL,
   basescanSupplyApi: BASESCAN_TOKENSUPPLY_API_URL,
@@ -70,12 +71,11 @@ const i18n = {
   description={layoutDescription}
   lang={pt ? 'pt-BR' : 'en'}
   ogLocale={pt ? 'pt_BR' : 'en_US'}
-  canonicalPath={pt ? '/pt-br/' : '/'}
+  canonicalPath={pt ? '/' : '/en/'}
 >
   <Nav locale={locale} />
   <HeroSection locale={locale} />
   <ProofSection locale={locale} />
-  <StatsBar locale={locale} />
   <TokenomicsSection locale={locale} />
   <ChartSection locale={locale} />
   <VerifySection locale={locale} />

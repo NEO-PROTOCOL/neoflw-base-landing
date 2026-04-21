@@ -54,6 +54,12 @@ export const MAX_SUPPLY_WEI = 1_000_000_000n * 10n ** 18n;
 /** Hard cap em unidades humanas — para UI/labels. */
 export const MAX_SUPPLY_TOKENS = 1_000_000_000;
 
+/**
+ * Supply cunhado / em circulação — referência explícita para UI (hero + tokenomics)
+ * sem depender da API do explorer. Atualizar quando o número real mudar.
+ */
+export const KNOWN_CIRCULATING_TOKENS = 2000;
+
 // ─── Public URLs (canonical) ────────────────────────────────────
 
 /**

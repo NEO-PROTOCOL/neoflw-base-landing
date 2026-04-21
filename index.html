@@ -79,6 +79,7 @@
 
         html {
             scroll-behavior: smooth;
+            scroll-padding-top: calc(52px + max(1rem, env(safe-area-inset-top, 0px)) + 0.75rem);
         }
 
         body {
@@ -485,10 +486,19 @@
         }
 
         .chip-addr {
-            font-family: var(--mono);
+            font-family: var(--mono), ui-monospace, 'SF Mono', 'Cascadia Mono', 'Liberation Mono', Consolas, monospace;
             font-size: 0.78rem;
+            font-weight: 500;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.04em;
             color: var(--green);
             word-break: break-all;
+        }
+
+        .hero-contract-row .chip-addr.chip-addr--hero {
+            font-family: var(--mono), ui-monospace, 'SF Mono', 'Cascadia Mono', 'Liberation Mono', Consolas, monospace;
+            font-weight: 500;
+            color: var(--text-2);
         }
 
         @media (max-width: 480px) {
@@ -630,12 +640,6 @@
             letter-spacing: -0.03em;
             color: #fff;
             margin-bottom: 0.25rem;
-        }
-
-        .hc-supply span {
-            font-size: 1.1rem;
-            color: var(--text-2);
-            font-weight: 400;
         }
 
         .hc-divider {
@@ -1809,8 +1813,8 @@
 
                         <!-- Row 1: primary CTAs — inline, flush to grid edge -->
                         <div class="hero-ctas">
-                            <a href="mint.html" class="btn-fill" style="background:var(--pink);box-shadow:0 10px 30px var(--pink-glow);color:#fff;">
-                                Claim Airdrop
+                            <a href="#mint" class="btn-fill" style="background:var(--pink);box-shadow:0 10px 30px var(--pink-glow);color:#fff;">
+                                Mint Now
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:13px;height:13px;flex-shrink:0;"><path d="M12 2v20M5 12l7 7 7-7"/></svg>
                             </a>
                             <a href="https://app.uniswap.org/swap?chain=base&inputCurrency=USDC&outputCurrency=0x41f4ff3d45ded9c1332e4908f637b75fe83f5d6b"
@@ -1826,7 +1830,7 @@
                             <div class="contract-chip">
                                 <span class="chip-label">Contract</span>
                                 <div style="background:rgba(3, 3, 5, 0.95);padding:4px 10px;border-radius:12px;border:1px solid var(--border-b);display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
-                                    <span class="chip-addr" id="addr" style="flex:1;min-width:0;color:var(--text-2);font-weight:700;">0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B</span>
+                                    <span class="chip-addr chip-addr--hero" id="addr" style="flex:1;min-width:0;font-family:var(--mono),ui-monospace,monospace;font-weight:500;">0x41F4ff3d45DED9C1332e4908F637B75fe83F5d6B</span>
                                     <button class="chip-copy" onclick="copyAddr()" style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px;color:var(--pink-soft);"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                                         copy
@@ -1861,7 +1865,7 @@
                                 </div>
                             </div>
                             <div class="hc-supply-label">Total Supply</div>
-                            <div class="hc-supply">1,000,000,000 <span>$NEOFLW</span></div>
+                            <div class="hc-supply">1,000,000,000</div>
                             <div class="hc-divider"></div>
                             <div class="hc-meta">
                                 <div>
@@ -2025,12 +2029,12 @@
 
     <section class="bento-section" id="tokenomics">
         <div class="wrap">
-            <div class="section-eyebrow">01 — Tokenomics &amp; Features</div>
-            <div class="section-title" id="features">Best-in-class token</div>
+            <div class="section-eyebrow">01 — Mint &amp; tokenomics</div>
+            <div class="section-title" id="features">Official $NEOFLW mint — live supply on Base</div>
 
             <div class="bento">
 
-                <div class="bc bc-supply bc-w8 interactive-mint">
+                <div class="bc bc-supply bc-w8 interactive-mint" id="mint">
                     <div class="bc-label">On-chain Distribution</div>
                     <div class="bc-number-huge" id="supply-count">—</div>
                     <div class="bc-sublabel">$NEOFLW minted of 1,000,000,000 max supply. One mint per wallet.</div>

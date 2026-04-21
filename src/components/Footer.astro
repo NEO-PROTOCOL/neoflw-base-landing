@@ -1,16 +1,21 @@
 ---
+import { Image } from 'astro:assets';
 import {
     BASESCAN_TOKEN_URL,
     GECKOTERMINAL_POOL_URL,
-    SOURCE_REPOS,
     UNISWAP_BUY_URL,
 } from '../web3/constants';
 
 interface Props {
     locale?: 'en' | 'pt-BR';
 }
-const { locale = 'en' } = Astro.props;
+const { locale = 'pt-BR' } = Astro.props;
 const pt = locale === 'pt-BR';
+const basePartnerLabel = pt ? 'Parceiro de Infraestrutura' : 'Infrastructure Partner';
+const basePartnerTitle = pt ? 'Suportado pela Base' : 'Powered by Base';
+const basePartnerBody = pt
+    ? 'Liquidação em Base Mainnet com infraestrutura L2 robusta para escalar com segurança.'
+    : 'Settlement on Base Mainnet with robust L2 infrastructure built for secure scaling.';
 ---
 <footer class="footer-area">
     <div class="wrap">
@@ -25,7 +30,7 @@ const pt = locale === 'pt-BR';
                 <a href={UNISWAP_BUY_URL} class="link-tile-v2" style="border-color:var(--green);color:var(--green);" target="_blank" rel="noopener">
                     <span class="link-tile-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-                    </span> {pt ? 'Comprar $NEOFLW' : 'Buy $NEOFLW'}</a>
+                    </span> {pt ? 'Swap on Uniswap' : 'Swap on Uniswap'}</a>
                 <a href={BASESCAN_TOKEN_URL} class="link-tile-v2" target="_blank" rel="noopener">
                     <span class="link-tile-icon">
                         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 16.5V7.5L12 2.25L3 7.5V16.5L12 21.75L21 16.5ZM12 4.125L18.75 8.25V15.75L12 19.875L5.25 15.75V8.25L12 4.125Z"/></svg>
@@ -35,10 +40,6 @@ const pt = locale === 'pt-BR';
                     <span class="link-tile-icon">
                         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932 6.064-6.932zm-1.292 19.49h2.039L6.486 3.24H4.298l13.311 17.403z"/></svg>
                     </span> X</a>
-                <a href={SOURCE_REPOS.tokenContract} class="link-tile-v2" target="_blank" rel="noopener">
-                    <span class="link-tile-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.041-1.416-4.041-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-                    </span> GitHub</a>
                 <a href={GECKOTERMINAL_POOL_URL} class="link-tile-v2" target="_blank" rel="noopener">
                     <span class="link-tile-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
@@ -46,116 +47,82 @@ const pt = locale === 'pt-BR';
                     GeckoTerminal</a>
             </div>
 
-            <div class="footer-sot" aria-label={pt ? 'Código-fonte e manifestos' : 'Source code and manifests'}>
-                <div class="footer-sot-label">
-                    <span class="footer-sot-dot" aria-hidden="true"></span>
-                    {pt ? 'Source-of-truth · código verificável' : 'Source-of-truth · verifiable code'}
-                </div>
-                <div class="footer-sot-row">
-                    <a class="footer-sot-chip" href={SOURCE_REPOS.tokenContract} target="_blank" rel="noopener">
-                        <span class="footer-sot-key">contract</span>
-                        <span class="footer-sot-val">NEO-FlowOFF/neoflw-token</span>
-                    </a>
-                    <a class="footer-sot-chip" href={SOURCE_REPOS.tokenPage} target="_blank" rel="noopener">
-                        <span class="footer-sot-key">page</span>
-                        <span class="footer-sot-val">NEO-PROTOCOL/neoflw-token-page</span>
-                    </a>
-                    <a class="footer-sot-chip" href={SOURCE_REPOS.orchestrator} target="_blank" rel="noopener">
-                        <span class="footer-sot-key">orchestrator</span>
-                        <span class="footer-sot-val">NEO-PROTOCOL/neobot-orchestrator</span>
-                    </a>
-                </div>
+            <div class="footer-base-powered-text" aria-label={basePartnerTitle}>
+                <span class="base-powered-kicker">{basePartnerLabel}</span>
+                <span class="base-powered-title">{basePartnerTitle}</span>
+                <span class="base-powered-body">{basePartnerBody}</span>
+                <a
+                    class="base-powered-logo-link"
+                    href="https://base.org"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={pt ? 'Abrir site da Base' : 'Open Base website'}
+                >
+                    <Image
+                        class="base-powered-logo"
+                        src="/Base_lockup_white.webp"
+                        alt="Base"
+                        width="300"
+                        height="77"
+                        loading="lazy"
+                    />
+                </a>
             </div>
 
             <div class="footer-note" style="margin-top: 2.5rem; text-align: center; color: var(--text-3); font-size: 0.7rem; border-top: 1px solid var(--border); padding-top: 2rem;">
                 <div style="font-weight: 900; font-size: 1rem; letter-spacing: -0.02em; margin-bottom: 0.5rem;"><span style="color: var(--pink);">NEØ</span>FLW</div>
                 <div style="margin-bottom: 0.25rem;">neoflowoff.eth · neoflowoff.agency · NEØ Flowoff Marketing e Assessoria Digital LTDA</div>
                 <div>&copy; 2026 NEØ Protocol. {pt ? 'Todos os direitos reservados.' : 'All rights reserved.'}</div>
-                <div style="margin-top: 0.5rem; font-style: italic;">{pt ? 'Código é lei. Expanda até o caos virar protocolo.' : 'Code is law. Expand until chaos becomes protocol.'}</div>
+                <div style="margin-top: 0.5rem; font-style: italic;">Code is law. Expand until chaos becomes protocol.</div>
             </div>
         </div>
     </div>
 </footer>
 
 <style>
-    .footer-sot {
-        margin-top: 3rem;
-        padding-top: 1.75rem;
-        border-top: 1px dashed rgba(255, 255, 255, 0.08);
+    .footer-base-powered-text {
+        margin-top: 2.5rem;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        gap: 0.85rem;
+        align-items: flex-start;
+        gap: 0.35rem;
+        text-align: left;
     }
 
-    .footer-sot-label {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-family: var(--mono);
-        font-size: 0.62rem;
+    .footer-base-powered-text .base-powered-kicker {
+        font-size: 0.6rem;
         text-transform: uppercase;
-        letter-spacing: 0.14em;
-        color: rgba(255, 255, 255, 0.45);
+        letter-spacing: 0.1em;
+        color: var(--blue);
+        font-weight: 800;
+        opacity: 0.75;
     }
 
-    .footer-sot-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: var(--pink);
-        box-shadow: 0 0 10px var(--pink-glow);
+    .footer-base-powered-text .base-powered-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text);
     }
 
-    .footer-sot-row {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 0.5rem;
-    }
-
-    .footer-sot-chip {
-        display: inline-flex;
-        align-items: baseline;
-        gap: 0.5rem;
-        padding: 0.4rem 0.75rem;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        font-family: var(--mono);
-        font-size: 0.7rem;
+    .footer-base-powered-text .base-powered-body {
+        font-size: 0.78rem;
         color: var(--text-2);
-        text-decoration: none;
-        transition: border-color 0.18s, background 0.18s, color 0.18s;
+        line-height: 1.6;
     }
 
-    .footer-sot-chip:hover {
-        border-color: rgba(255, 0, 128, 0.4);
-        background: rgba(255, 0, 128, 0.06);
-        color: #fff;
+    .base-powered-logo-link {
+        margin-top: 0.6rem;
+        display: inline-flex;
+        opacity: 0.9;
+        transition: opacity 0.2s ease;
     }
 
-    .footer-sot-key {
-        color: var(--pink-soft);
-        font-weight: 600;
-        text-transform: lowercase;
-        letter-spacing: 0.04em;
+    .base-powered-logo-link:hover {
+        opacity: 1;
     }
 
-    .footer-sot-key::after {
-        content: ' /';
-        color: rgba(255, 255, 255, 0.25);
-        font-weight: 400;
-    }
-
-    .footer-sot-val {
-        color: rgba(255, 255, 255, 0.7);
-    }
-
-    @media (max-width: 600px) {
-        .footer-sot-chip {
-            font-size: 0.65rem;
-            padding: 0.35rem 0.65rem;
-        }
+    .base-powered-logo {
+        height: auto;
+        width: min(220px, 100%);
     }
 </style>

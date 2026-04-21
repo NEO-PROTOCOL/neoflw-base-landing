@@ -31,6 +31,7 @@ import {
 } from 'viem';
 import { base } from 'viem/chains';
 import { NEOFLW_ABI } from '../web3/abi';
+import { MAX_SUPPLY_WEI } from '../web3/constants';
 
 // ─── Types injected via window ───────────────────────────────────
 
@@ -69,8 +70,11 @@ interface HomeOnchain {
   contract: Address;
   contractLc: string;
   maxSupply: number;
+  /** Referência pública (sem API explorer) — % = knownCirculatingTokens / maxSupply */
+  knownCirculatingTokens: number;
   geckoApi: string;
   dexscreenerApi: string;
+  /** Fallback quando `getContractInfo` (RPC) falha — supply total em wei (Etherscan/Basescan API). */
   basescanSupplyApi: string;
 }
 
@@ -393,6 +397,73 @@ interface ContractInfo {
   bridge: Address;
 }
 
+/** Rótulo de % para valores muito pequenos (ex. 2000 / 1B ≈ 0.0002%). */
+function formatCirculatingPctLabel(pctRaw: number): string {
+  if (!Number.isFinite(pctRaw) || pctRaw <= 0) return '0%';
+  if (pctRaw >= 99.995) return '100%';
+  if (pctRaw < 0.01) return `${Number(pctRaw.toFixed(6))}%`;
+  if (pctRaw < 1) return `${pctRaw.toFixed(3)}%`;
+  return `${pctRaw.toFixed(2)}%`;
+}
+
+/** Hero + tokenomics: minted / max (mesma regra que supply-bar). */
+function setCirculatingSupplyUIFromRatio(pctRaw: number): void {
+  const w = Math.max(0, Math.min(100, pctRaw));
+  const hcPct = document.getElementById('hc-circ-pct');
+  const hcFill = document.getElementById('hc-bar-fill');
+  if (hcPct) hcPct.textContent = formatCirculatingPctLabel(pctRaw);
+  if (hcFill) hcFill.style.width = `${w}%`;
+}
+
+/** Snapshot público (constants) — sem API; sobrescrito por `updateUI` se o RPC responder. */
+function applyKnownSupplySnapshot(): void {
+  const circ = onchain.knownCirculatingTokens;
+  const max = onchain.maxSupply;
+  if (max <= 0) return;
+  const pctRaw = (circ / max) * 100;
+  const pctClamped = Math.max(0, Math.min(100, pctRaw));
+  const supplyEl = document.getElementById('supply-count');
+  if (supplyEl) supplyEl.textContent = circ.toLocaleString(numberLocale);
+  const bar = document.getElementById('supply-bar');
+  if (bar) bar.style.width = `${pctClamped}%`;
+  setCirculatingSupplyUIFromRatio(pctRaw);
+}
+
+/** Atualiza só supply hero + tokenomics (barras / contagem) a partir do wei on-chain do explorer. */
+function setSupplyUIFromCurrentWei(currentWei: bigint): void {
+  const currentSupply = formatEther(currentWei);
+  const maxSupply = formatEther(MAX_SUPPLY_WEI);
+  const curN = Number(currentSupply);
+  const maxN = Number(maxSupply);
+  const percentage = maxN > 0 ? (curN / maxN) * 100 : 0;
+  const percentageClamped = Math.max(0, Math.min(100, percentage));
+
+  const supplyCount = document.getElementById('supply-count');
+  const supplyBar = document.getElementById('supply-bar');
+  if (supplyCount) supplyCount.textContent = curN.toLocaleString(numberLocale);
+  if (supplyBar) supplyBar.style.width = `${percentageClamped}%`;
+  setCirculatingSupplyUIFromRatio(percentage);
+}
+
+interface BasescanSupplyResp {
+  status: string;
+  message?: string;
+  result?: string;
+}
+
+async function fetchTokenSupplyWeiFromExplorer(): Promise<bigint | null> {
+  const url = onchain.basescanSupplyApi;
+  if (!url) return null;
+  try {
+    const json = await fetchJsonWithTimeout<BasescanSupplyResp>(url);
+    if (json.status !== '1' || json.result == null || json.result === '') return null;
+    return BigInt(json.result);
+  } catch (err) {
+    console.warn('Basescan tokensupply fallback failed:', err);
+    return null;
+  }
+}
+
 function updateUI(info: ContractInfo): void {
   const currentSupply = formatEther(info.currentSupply);
   const maxSupply = formatEther(info.maxSupply);
@@ -404,13 +475,16 @@ function updateUI(info: ContractInfo): void {
   const infoPrice = document.getElementById('info-price');
   const supplyBar = document.getElementById('supply-bar');
 
-  if (supplyCount) supplyCount.textContent = Number(currentSupply).toLocaleString(numberLocale);
+  const maxN = Number(maxSupply);
+  const curN = Number(currentSupply);
+  const percentage = maxN > 0 ? (curN / maxN) * 100 : 0;
+  const percentageClamped = Math.max(0, Math.min(100, percentage));
+
+  if (supplyCount) supplyCount.textContent = curN.toLocaleString(numberLocale);
   if (infoAmount) infoAmount.textContent = `${Number(amount).toLocaleString(numberLocale)} $NEOFLW`;
   if (infoPrice) infoPrice.textContent = `${price} ETH`;
-  if (supplyBar) {
-    const percentage = (Number(currentSupply) / Number(maxSupply)) * 100;
-    supplyBar.style.width = `${percentage}%`;
-  }
+  if (supplyBar) supplyBar.style.width = `${percentageClamped}%`;
+  setCirculatingSupplyUIFromRatio(percentage);
 
   if (!info.mintEnabled) {
     const btn = document.getElementById('action-mint-btn') as HTMLButtonElement | null;
@@ -711,11 +785,6 @@ interface DexScreenerResp {
   }>;
 }
 
-interface BasescanSupplyResp {
-  status: string;
-  result: string;
-}
-
 async function updateLiveStats(): Promise<void> {
   const statsBadge = document.getElementById('stats-status');
   let statsLoaded = false;
@@ -771,24 +840,6 @@ async function updateLiveStats(): Promise<void> {
   }
 
   try {
-    const supplyData = await fetchJsonWithTimeout<BasescanSupplyResp>(onchain.basescanSupplyApi);
-    if (supplyData.status === '1') {
-      const supply = parseInt(supplyData.result, 10) / 1e18;
-      const pct = Math.round((supply / onchain.maxSupply) * 100);
-      const supplyEl = document.getElementById('supply-count');
-      if (supplyEl) supplyEl.textContent = supply.toLocaleString(numberLocale);
-      const bar = document.getElementById('supply-bar');
-      if (bar) bar.style.width = `${pct}%`;
-      const hcPct = document.getElementById('hc-circ-pct');
-      if (hcPct) hcPct.textContent = pct + '%';
-      const hcFill = document.getElementById('hc-bar-fill');
-      if (hcFill) hcFill.style.width = pct + '%';
-    }
-  } catch (err) {
-    console.warn('Supply fetch failed:', err);
-  }
-
-  try {
     await updateProofTrustSignals();
   } catch (err) {
     console.warn('Proof trust refresh failed:', err);
@@ -816,6 +867,8 @@ function copyAddr(): void {
 }
 
 function setupEventListeners(): void {
+  applyKnownSupplySnapshot();
+
   if (!listenersBound) {
     document.getElementById('connect-btn')?.addEventListener('click', () => void toggleWallet());
     document.getElementById('action-mint-btn')?.addEventListener('click', () => void doMint());
@@ -867,7 +920,11 @@ async function init(): Promise<void> {
     });
   } catch (e) {
     console.error('Failed to load contract info:', e);
-    // Fallback: BaseScan supply chega via updateLiveStats().
+    const explorerWei = await fetchTokenSupplyWeiFromExplorer();
+    if (explorerWei !== null) {
+      setSupplyUIFromCurrentWei(explorerWei);
+    }
+    // Se RPC e explorer falharem, mantém-se o snapshot de `KNOWN_CIRCULATING_TOKENS` (applyKnownSupplySnapshot).
   }
 
   await updateProofTrustSignals();

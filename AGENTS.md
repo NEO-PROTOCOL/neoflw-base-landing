@@ -1,4 +1,5 @@
 <!-- markdownlint-disable MD003 MD007 MD013 MD022 MD023 MD025 MD029 MD032 MD033 MD034 -->
+# TOKEN NEOFLW
 
 ```text
 ╔══════════════════════════════════════════════════════════════════╗
@@ -340,7 +341,7 @@ Contract entrypoints relevantes (ver `src/web3/abi.ts`):
 - Nunca commitar `.agents/` ou `.claude/skills/`
 - Nunca usar emoji colorido em docs (ver MARKDOWN_STYLE_GUIDE)
 - Nunca editar contratos sem rodar skill `solidity-security`
-- Nunca renomear `src/pages/pt-br/` (URLs já indexadas)
+- URLs legadas `/pt-br/*`: a árvore `src/pages/pt-br/` pode estar ausente após migração; **não remover** os redirects 301 em `vercel.json` que preservam essas rotas (`/pt-br` → `/`, `/pt-br/mint` → `/mint`, etc.). Indexação antiga deve continuar a resolver.
 
 ────────────────────────────────────────
 

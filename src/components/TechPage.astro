@@ -1,0 +1,26 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from './Nav.astro';
+import TechSection from './TechSection.astro';
+import Footer from './Footer.astro';
+
+interface Props {
+  locale?: 'en' | 'pt-BR';
+}
+const { locale = 'pt-BR' } = Astro.props;
+const pt = locale === 'pt-BR';
+---
+
+<Layout
+  title={pt ? 'Tecnologia — $NEOFLW' : 'Technology — $NEOFLW'}
+  description={pt
+    ? 'Defesa técnica do token $NEOFLW: Base L2, verificação on-chain, padrões OpenZeppelin e arquitetura imutável.'
+    : 'Technical defense of the $NEOFLW token: Base L2, on-chain verification, OpenZeppelin standards, and immutable architecture.'}
+  lang={pt ? 'pt-BR' : 'en'}
+  ogLocale={pt ? 'pt_BR' : 'en_US'}
+  canonicalPath={pt ? '/tech' : '/en/tech'}
+>
+  <Nav locale={locale} />
+  <TechSection locale={locale} />
+  <Footer locale={locale} />
+</Layout>
